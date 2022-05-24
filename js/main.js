@@ -1,5 +1,10 @@
-
 mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wxMTlrNDh6MThmbzNxbzBoMjhtNjlubCJ9.EMR9N5vvQAEuDHRa38ADvQ';
+
+const stateToCountyZoomThresh = 7;
+const countyToTRZoomThresh = 9;
+const TRtoSectionZoomThresh = 11;
+const maxZoomLevel = 22;
+
 
 const map = new mapboxgl.Map({
     container: 'map', // container ID from the div
@@ -23,6 +28,8 @@ map.on('load', () => {
         'id': 'stateBound',
         'source':'stateBoundaries',
         'source-layer': 'MN_stateBoundary_CRS4326',
+        'minzoom': 0,
+        'maxzoom': maxZoomLevel,
         'type': 'line',
         'paint':{
             'line-color': '#fff',
@@ -38,6 +45,8 @@ map.on('load', () => {
         'id': 'countyBound',
         'source':'countyBoundaries',
         'source-layer': 'MN_countyBoundaries_CRS4326',
+        'minzoom': stateToCountyZoomThresh,
+        'maxzoom': countyToTRZoomThresh,
         'type': 'line',
         'paint':{
             'line-color': '#f00',
@@ -47,12 +56,14 @@ map.on('load', () => {
 
     map.addSource('countyCentroids', {
         type: 'vector',
-        url: 'mapbox://geohouse.1zii6ei6'
+        url: 'mapbox://geohouse.cl364uk210mzw20od5lzldwmo-8l9mh'
     });
     map.addLayer({
         'id': 'countyCenters',
         'source':'countyCentroids',
-        'source-layer': 'MN_countyCentroids_CRS4326-8o7cbj',
+        'source-layer': 'MN_countyCentroids_CRS4326',
+        'minzoom': stateToCountyZoomThresh,
+        'maxzoom': countyToTRZoomThresh,
         'type': 'circle',
         'paint':{
             'circle-radius': 4,
@@ -69,6 +80,8 @@ map.on('load', () => {
         'id': 'trBound',
         'source':'townshipRangeBoundaries',
         'source-layer': 'MN_townshipRangeBoundaries_CR-165sgr',
+        'minzoom': countyToTRZoomThresh,
+        'maxzoom': TRtoSectionZoomThresh,
         'type': 'line',
         'paint':{
             'line-color': '#00f',
@@ -84,6 +97,8 @@ map.on('load', () => {
         'id': 'trCenters',
         'source':'townshipRangeCentroids',
         'source-layer': 'MN_townshipRangeCentroids_CRS-cmfe41',
+        'minzoom': countyToTRZoomThresh,
+        'maxzoom': TRtoSectionZoomThresh,
         'type': 'circle',
         'paint':{
             'circle-radius': 2,
@@ -99,6 +114,8 @@ map.on('load', () => {
         'id': 'sectionBound',
         'source':'sectionBoundaries',
         'source-layer': 'MN_sectionBoundaries_CRS4326-5yduoq',
+        'minzoom': TRtoSectionZoomThresh,
+        'maxzoom': maxZoomLevel,
         'type': 'line',
         'paint':{
             'line-color': '#0ff',
@@ -114,6 +131,8 @@ map.on('load', () => {
         'id': 'sectionCenters',
         'source':'sectionCentroids',
         'source-layer': 'MN_sectionCentroids_CRS4326-arv0q8',
+        'minzoom': TRtoSectionZoomThresh,
+        'maxzoom': maxZoomLevel,
         'type': 'circle',
         'paint':{
             'circle-radius': 1,
