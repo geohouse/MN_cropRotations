@@ -1,10 +1,13 @@
-mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wxMTlrNDh6MThmbzNxbzBoMjhtNjlubCJ9.EMR9N5vvQAEuDHRa38ADvQ';
+mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg';
 
 const stateToCountyZoomThresh = 7;
 const countyToTRZoomThresh = 9;
 const TRtoSectionZoomThresh = 11;
 const maxZoomLevel = 22;
 
+
+// Layers are rendered in the same order they are defined; layers near the top of the file are rendered first (i.e. under)
+// layers at the bottom of the file
 
 const map = new mapboxgl.Map({
     container: 'map', // container ID from the div
@@ -139,6 +142,28 @@ map.on('load', () => {
             'circle-color': '#f0f'
         }
     });
+
+    // For image styling, 
+    map.addSource('imageTests', {
+        type: 'vector',
+        url: 'mapbox://geohouse.0yc9mwo8'
+    });
+    
+    console.log(imageTests.properties);
+
+    map.addLayer({
+        'id': 'testImagePoints',
+        'source':'imageTests',
+        'source-layer': 'mapBox_pointImageTest-cht3ww',
+        'minzoom': stateToCountyZoomThresh,
+        'maxzoom': countyToTRZoomThresh,
+        'type': 'circle',
+        'paint':{
+            'circle-radius': 10,
+            'circle-color': '#ff0'
+        }
+    });
+
 
 });
 
