@@ -76,4 +76,301 @@ $.getJSON(urlForData, function(jsonData){
 }
 
 plotPoints(jsonURL);
+let zoomLevel = 0;
+// const countyBoundaryOptions = {
+//     interactive: true,
+//     vectorTileLayerStyles: {
+//         MN_countyBoundaries_CRS4326: function(properties, zoom){
+//             const weight = 1;
+//             console.log(zoom);
+//             console.log(properties);
+//             zoomLevel = zoom;
+//             if (zoom >= 15 || zoom <= 5){
+                
+//                 return ({
+//                     fillOpacity: 0,
+//                     weight: 0,
+//                 })
+//             } else {
+//                 return ({
+//                     fillOpacity: 1,
+//                     fillColor: '#ff0000',
+//                     weight: weight,
+//                 })
+//             };
+//         }
+//     }
+// };
 
+// const countyBoundaryOptions = {
+//         MN_countyBoundaries_CRS4326: {
+//             weight: 3,
+//             color: "#ff0",
+//             opacity: 0
+//         }
+// };
+
+const countyMinZoom = 7;
+const countyMaxZoom = 9;
+const trMinZoom = 9;
+const trMaxZoom = 11;
+const sectionMinZoom = 11;
+const sectionMaxZoom = 22;
+
+
+// Get the layer names from the Tilesets page in Mapbox (exactly as they )
+const vectorTileStylingOptions = {
+    'MN_stateBoundary_CRS4326': {
+        //console.log(properties);
+        //console.log(zoom);
+        weight: 3,
+        color: "#f0f",
+        opacity: 1
+    },
+    'MN_countyBoundaries_CRS4326': function(properties, zoom){
+        //console.log(properties);
+        //console.log(zoom);
+        if (zoom >= countyMaxZoom || zoom <= countyMinZoom){
+            return({
+                // makes disappear at zoom levels outside the needed range
+                opacity: 0
+            })
+        } else{
+            return({
+                weight: 3,
+                color: "#ff0",
+                opacity: 1
+            })
+        }
+
+    },
+    'MN_countyCentroids_CRS4326': function(properties, zoom){
+        if (zoom >= countyMaxZoom || zoom <= countyMinZoom){
+            return({
+                opacity: 0
+            })
+        } else{
+            return({
+                fill: true,
+                weight: 3,
+                fillColor: "#f0f",
+                color: "#f0f",
+                opacity: 1
+            })
+        }
+    },
+    'MN_townshipRangeBoundaries_CR-165sgr': function(properties, zoom){
+        if (zoom >= trMaxZoom || zoom <= trMinZoom){
+            return({
+                // makes disappear at zoom levels outside the needed range
+                opacity: 0
+            })
+        } else{
+            return({
+                weight: 2,
+                color: "#0ff",
+                opacity: 1
+            })
+        }
+
+    },
+    'MN_townshipRangeCentroids_CRS-cmfe41': function(properties, zoom){
+        if (zoom >= trMaxZoom || zoom <= trMinZoom){
+            return({
+                opacity: 0
+            })
+        } else{
+            return({
+                fill: true,
+                weight: 2,
+                fillColor: "#f6f",
+                color: "#f6f",
+                opacity: 1
+            })
+        }
+    },
+    'MN_sectionBoundaries_CRS4326-5yduoq': function(properties, zoom){
+        if (zoom >= sectionMaxZoom || zoom <= sectionMinZoom){
+            return({
+                // makes disappear at zoom levels outside the needed range
+                opacity: 0
+            })
+        } else{
+            return({
+                weight: 1,
+                color: "#f80",
+                opacity: 1
+            })
+        }
+
+    },
+    'MN_sectionCentroids_CRS4326-arv0q8': function(properties, zoom){
+        if (zoom >= sectionMaxZoom || zoom <= sectionMinZoom){
+            return({
+                opacity: 0
+            })
+        } else{
+            return({
+                fill: true,
+                weight: 1,
+                color: '#6ff',
+                fillColor: "#6ff",
+                opacity: 1
+            })
+        }
+    }
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let sectionCentroidsLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.1ve57zd7/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let sectionBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.actmjjf3/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let trCentroidsLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.ashxwcy1/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let trBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.4rzngdch/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let countyCentroidsLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.cl364uk210mzw20od5lzldwmo-8l9mh/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let countyBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.cl34ri1a70cpp21rx3s1lsnk8-3702a/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+let stateBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.cl34p6beh1nx120s2y59y1ady-6nfmo/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: vectorTileStylingOptions,
+}).addTo(map);
+
+// state outline
+//geohouse.cl34p6beh1nx120s2y59y1ady-6nfmo
+
+// tr boundaries
+//geohouse.4rzngdch
+
+// tr centroids
+//geohouse.ashxwcy1
+
+// section bounds
+//geohouse.actmjjf3
+
+// section centers
+//geohouse.1ve57zd7
+
+/*
+let countyBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/geohouse.cl34ri1a70cpp21rx3s1lsnk8-3702a/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+    token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+    vectorTileLayerStyles: countyBoundaryOptions,
+}).on('click', function(e) {console.log(e);
+}).addTo(map);
+*/
+
+// var vectorTileOptions = {
+//     vectorTileLayerStyles: {
+//         // A plain set of L.Path options.
+//         landuse: {
+//             weight: 0,
+//             fillColor: '#9bc2c4',
+//             fillOpacity: 1,
+//             fill: true
+//         },
+//         // A function for styling features dynamically, depending on their
+//         // properties and the map's zoom level
+//         admin: function(properties, zoom) {
+//             var level = properties.admin_level;
+//             var weight = 1;
+//             if (level == 2) {weight = 4;}
+//             return {
+//                 weight: weight,
+//                 color: '#cf52d3',
+//                 dashArray: '2, 6',
+//                 fillOpacity: 0
+//             }
+//         },
+//         // A function for styling features dynamically, depending on their
+//         // properties, the map's zoom level, and the layer's geometry
+//         // dimension (point, line, polygon)
+//         water: function(properties, zoom, geometryDimension) {
+// 	    if (geometryDimension === 1) {   // point
+// 	        return ({
+//                     radius: 5,
+//                     color: '#cf52d3',
+//                 });
+// 	    }
+	    
+// 	    if (geometryDimension === 2) {   // line
+//                  return ({
+//                     weight: 1,
+//                     color: '#cf52d3',
+//                     dashArray: '2, 6',
+//                     fillOpacity: 0
+//                 });
+// 	    }
+	    
+// 	    if (geometryDimension === 3) {   // polygon
+// 	         return ({
+//                     weight: 1,
+//                     fillColor: '#9bc2c4',
+//                     fillOpacity: 1,
+//                     fill: true
+//                 });
+// 	    }
+//         },
+//         // An 'icon' option means that a L.Icon will be used
+//         place: {
+//             icon: new L.Icon.Default()
+//         },
+//         road: []
+//     }
+// };
+
+// let vectorTest = {
+//     water: {
+//       fill: true,
+//       weight: 1,
+//       fillColor: "#06cccc",
+//       color: "#06cccc",
+//       fillOpacity: 0.2,
+//       opacity: 0.4
+//     },
+//     admin: {
+//       weight: 1,
+//       fillColor: "#f00",
+//       color: "#f00",
+//       fillOpacity: 0.2,
+//       opacity: 0.4
+//     }
+// }
+
+// let countyBoundaryLayer = L.vectorGrid.protobuf("https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg", {
+//     token: "pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg",
+//     vectorTileLayerStyles: vectorTest,
+// }).addTo(map);
