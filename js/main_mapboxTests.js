@@ -105,12 +105,18 @@ function plotURLIcons (inputGeojson){
         console.log("Marker");
         console.log(marker);
         let iconDiv = document.createElement('div');
-        const width = 40;
-        const height = 40;
+        const width = 100;
+        const height = 100;
         iconDiv.className = 'icon'; 
-        iconDiv.style.backgroundImage = 'url(https://github.com/geohouse/MN_cropRotations/blob/main/img/cnty/Hennepin.png)';
-        //iconDiv.style.width = `${width}px`;
-        //iconDiv.style.height = `${height}px`;
+        // There are spaces in some of the county names, so need to escape those to html for the 
+        // images to load correctly.
+        let imageURI = marker.properties.imgUrl;
+        let imageURI_encoded = encodeURI(imageURI);
+        iconDiv.style.backgroundImage = `url(${imageURI_encoded})`;
+        //iconDiv.style.backgroundImage = "url('img/cnty/Crow Wing.png')";
+        //iconDiv.style.backgroundImage = "url('https://github.com/geohouse/MN_cropRotations/blob/main/img/cnty/Otter%20Tail.png?raw=true')";
+        iconDiv.style.width = `${width}px`;
+        iconDiv.style.height = `${height}px`;
         console.log(iconDiv);
         new mapboxgl.Marker(iconDiv).setLngLat(marker.geometry.coordinates).addTo(map);
     }
