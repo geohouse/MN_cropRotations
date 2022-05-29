@@ -5,9 +5,12 @@ const countyToTRZoomThresh = 9;
 const TRtoSectionZoomThresh = 11;
 const maxZoomLevel = 12; // was 22
 
-
-
+// Will need to implement clustering and zoom levels to show these data (~12Mb)
+let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_sectionCentroids_CRS4326_v2.geojson";
+// operational, but commented out
 let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_countyCentroids_CRS4326_v3.geojson";
+
+
 //let jsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/mapBox_pointImageTest.geojson";
 
 // Layers are rendered in the same order they are defined; layers near the top of the file are rendered first (i.e. under)
@@ -129,7 +132,7 @@ map.on('load', () => {
         data: geojsonURL,
         type: 'geojson'
     });
-    let geojsonData;
+    
     $.getJSON(geojsonURL, function(jsonData){
         plotURLIcons(jsonData);
     });
