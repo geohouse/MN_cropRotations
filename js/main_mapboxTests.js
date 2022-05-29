@@ -6,7 +6,7 @@ const TRtoSectionZoomThresh = 11;
 const maxZoomLevel = 12; // was 22
 
 // Will need to implement clustering and zoom levels to show these data (~12Mb)
-let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_sectionCentroids_CRS4326_v2.geojson";
+//let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_sectionCentroids_CRS4326_v2.geojson";
 // operational, but commented out
 let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_countyCentroids_CRS4326_v3.geojson";
 
@@ -103,6 +103,9 @@ const map = new mapboxgl.Map({
     zoom: 6
 });
 
+// This works as POC (when code calling it below is uncommented), but seems like a very hacky way to get 
+// unique images onto a map. Now adding all needed images into the map's style, and then matching ids between
+// those images and a unique name field in the tileset properties (from the geojson properties).
 function plotURLIcons (inputGeojson){
     for (marker of inputGeojson.features){
         console.log("Marker");
@@ -125,20 +128,46 @@ function plotURLIcons (inputGeojson){
     }
 }
 
+
 // Wait until map has finished loading
 map.on('load', () => {
 
-    map.addSource('countyCentroids_TEST', {
-        data: geojsonURL,
-        type: 'geojson'
-    });
+    // map.addSource('countyCentroids_TEST', {
+    //     data: geojsonURL,
+    //     type: 'geojson'
+    // });
     
-    $.getJSON(geojsonURL, function(jsonData){
-        plotURLIcons(jsonData);
-    });
+    // map.loadImage('https://github.com/geohouse/MN_cropRotations/blob/main/img/test.jpg?raw=true', (error, image) => {
+    //     if (error) throw error;
+    //     // Add the loaded image to the style's sprite with the ID 'kitten'.
+    //     map.addImage('kitten', image);
+    //     });
+    // console.log("added cat");
 
-    console.log("Testing");
-    console.log(geojsonData);
+    const images = [{url:'https://placekitten.com/g/50/50',id:'Hennepin'},{url:'https://placekitten.com/g/50/50',id:'Otter Tail'},{url:'https://placekitten.com/g/50/50',id:'Crow Wing'}];
+    // Code to add all images to the map's style asynchronously, then to place each image as a marker where
+    // it should go based on matching id values (I can define what these should be) between the images and a 
+    // property in the tileset (which was a property in the geojson file). Doing it this way also allows
+    // image add/remove based on zoom level like all the rest of the properties of the style.
+    // This code is from here:
+    // https://github.com/mapbox/mapbox-gl-js/issues/4736
+
+    Promise.all(
+       images.map(img => new Promise((resolve, reject) => {
+           map.loadImage(img.url, function (error, image) {
+               if (error) throw error;
+               map.addImage(img.id, image)
+               resolve();
+           })
+       }))
+   ).then(console.log("Images Loaded"));
+
+    // $.getJSON(geojsonURL, function(jsonData){
+    //    plotURLIcons(jsonData);
+    // });
+
+    //console.log("Testing");
+    //console.log(geojsonData);
 
 
     // Add my custom vector tilesets
@@ -187,11 +216,17 @@ map.on('load', () => {
         'source-layer': 'MN_countyCentroids_CRS4326',
         'minzoom': stateToCountyZoomThresh,
         'maxzoom': countyToTRZoomThresh,
-        'type': 'circle',
-        'paint':{
-            'circle-radius': 4,
-            'circle-color': '#0f0'
+        'type':'symbol',
+        'layout': {
+            // Tell it which field in the geojson to plot should match with the image id in order for the 
+            // correct image to be placed in the correct location (by name id)
+            'icon-image': ['get', 'COUN_LC']
         }
+        //'type': 'circle',
+        //'paint':{
+        //    'circle-radius': 4,
+        //    'circle-color': '#0f0'
+        //}
     });
 
 
