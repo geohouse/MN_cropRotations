@@ -10,3 +10,7 @@ body {
     bottom: 0;
     width: 100%;
 }
+
+.icon {
+    background-image: url("https://github.com/geohouse/MN_cropRotations/blob/main/img/cnty/Hennepin.png");
+}
