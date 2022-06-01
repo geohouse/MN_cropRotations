@@ -144,7 +144,10 @@ map.on('load', () => {
     //     });
     // console.log("added cat");
 
-    const images = [{url:'https://placekitten.com/g/50/50',id:'Hennepin'},{url:'https://placekitten.com/g/50/50',id:'Otter Tail'},{url:'https://placekitten.com/g/50/50',id:'Crow Wing'}];
+    // The URLs MUST be from raw.githubusercontent.com/geohouse/MN_cropRotations/main
+    // and end with the image file extension, otherwise mapbox gives CORS error if using the version of the 
+    // file from the GitHub webpage -> copy image link (that ends with i.e. .jpg?raw=true)
+    const images = [{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Hennepin.png',id:'Hennepin'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Otter%20Tail.png',id:'Otter Tail'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Crow%20Wing.png',id:'Crow Wing'}];
     // Code to add all images to the map's style asynchronously, then to place each image as a marker where
     // it should go based on matching id values (I can define what these should be) between the images and a 
     // property in the tileset (which was a property in the geojson file). Doing it this way also allows
@@ -220,7 +223,9 @@ map.on('load', () => {
         'layout': {
             // Tell it which field in the geojson to plot should match with the image id in order for the 
             // correct image to be placed in the correct location (by name id)
-            'icon-image': ['get', 'COUN_LC']
+            'icon-image': ['get', 'COUN_LC'],
+            // units relative to default size (1). Must be > 0.
+            //'icon-size': 0.2
         }
         //'type': 'circle',
         //'paint':{
