@@ -2,13 +2,16 @@ import rasterio
 import numpy as np
 import math
 
+# Working correctly 060222
+
 # Needs to be run in the Anaconda Powershell Prompt on Windows using:
 # python "C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\python\rasterChangeCalc.py"
 
 yearsToProcess = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021]
 
 # For testing only
-yearsToProcess = [2008,2009]
+#yearsToProcess = [2008,2009]
+#tyearsToProcess = [2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021]
 
 for index in range(0,len(yearsToProcess) - 1):
     print(f"{yearsToProcess[index]},{yearsToProcess[index+1]}")
@@ -100,28 +103,28 @@ for index in range(0,len(yearsToProcess) - 1):
         #   2   |   3
         
         # Commented out for testing but operational
-        # for quadrant in range(0,4):
-        #     if quadrant == 0:
-        #         # Indexing works like range - will go to raster_halfHeight - 1
-        #         cdl1_quarter = cdl_1_band[0:raster_halfHeight,0:raster_halfWidth]
-        #         cdl2_quarter = cdl_2_band[0:raster_halfHeight, 0:raster_halfWidth]
-        #         print("quad 0")
-        #         processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
-        #     elif quadrant == 1:
-        #         cdl1_quarter = cdl_1_band[0:raster_halfHeight, raster_halfWidth:rasterWidth]
-        #         cdl2_quarter = cdl_2_band[0:raster_halfHeight, raster_halfWidth:rasterWidth]
-        #         print("quad 1")
-        #         processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
-        #     elif quadrant == 2:
-        #         cdl1_quarter = cdl_1_band[raster_halfHeight:rasterHeight,0:raster_halfWidth]
-        #         cdl2_quarter = cdl_2_band[raster_halfHeight:rasterHeight,0:raster_halfWidth]
-        #         print("quad 2")
-        #         processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)           
-        #     elif quadrant == 3:
-        #         cdl1_quarter = cdl_1_band[raster_halfHeight:rasterHeight, raster_halfWidth:rasterWidth]
-        #         cdl2_quarter = cdl_2_band[raster_halfHeight:rasterHeight, raster_halfWidth:rasterWidth]
-        #         print("quad 3")
-        #         processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
+        for quadrant in range(0,4):
+            if quadrant == 0:
+                # Indexing works like range - will go to raster_halfHeight - 1
+                cdl1_quarter = cdl_1_band[0:raster_halfHeight,0:raster_halfWidth]
+                cdl2_quarter = cdl_2_band[0:raster_halfHeight, 0:raster_halfWidth]
+                print("quad 0")
+                processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
+            elif quadrant == 1:
+                cdl1_quarter = cdl_1_band[0:raster_halfHeight, raster_halfWidth:rasterWidth]
+                cdl2_quarter = cdl_2_band[0:raster_halfHeight, raster_halfWidth:rasterWidth]
+                print("quad 1")
+                processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
+            elif quadrant == 2:
+                cdl1_quarter = cdl_1_band[raster_halfHeight:rasterHeight,0:raster_halfWidth]
+                cdl2_quarter = cdl_2_band[raster_halfHeight:rasterHeight,0:raster_halfWidth]
+                print("quad 2")
+                processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)           
+            elif quadrant == 3:
+                cdl1_quarter = cdl_1_band[raster_halfHeight:rasterHeight, raster_halfWidth:rasterWidth]
+                cdl2_quarter = cdl_2_band[raster_halfHeight:rasterHeight, raster_halfWidth:rasterWidth]
+                print("quad 3")
+                processQuadrantData(cdl1_quarter, cdl2_quarter, quadrant)
 
         # Read in the quadrant processed .npy files from above for loop and 
         # concat them all back to the full size for saving.
@@ -154,47 +157,4 @@ for index in range(0,len(yearsToProcess) - 1):
             crs = rasterCRS,
             transform = rasterTransform) as outputGeoTIFF:
                 outputGeoTIFF.write(fullCatQuads,1)
-
-
-        #cdl_concat = np.empty([cdl_1.height,cdl_1.width], dtype='uint16')
-
-        # for currRow in cdl_1_band:
-        #     for currColumn in currRow:
-        #         counter += 1
-        #         if (counter % 1000000 == 0):
-        #             print(counter)
-        #         cdl_concat
-
-        # def concatEntries(cellValue1, cellValue2):
-        #     # Combines the numbers of the two rasters
-        #     # to later decode the crop change for each 
-        #     # pixel in the two years being compared (after
-        #     # splitting the numbers apart again and looking up
-        #     # the crop codes for each). To make this lookup easier,
-        #     # buffer the second entries with any needed zeros to 
-        #     # make a 3 digit entry.
-
-        #     strValue1 = str(cellValue1)
-        #     initialValue2 = str(cellValue2)
-
-        #     if(len(initialValue2) == 3):
-        #         strValue2 = initialValue2
-        #     elif (len(initialValue2) == 2):
-        #         strValue2 = '0' + initialValue2
-        #     elif (len(initialValue2) == 1):
-        #         strValue2 = '00' + initialValue2
-
-        #     return int(strValue1 + strValue2)
-
-
-        # #testArray = np.array([[1,2,3],[4,5,6],[7,8,9]])
-        # #testArray2 = np.array([[1,10,100],[42,6,126],[132,8,65]])
-
-
-        # concatEntriesVector = np.vectorize(concatEntries)
-
-        # #testOutput = concatEntriesVector(cdl_1_band, cdl_2_band)
-
-        # #print(testOutput)
-
 
