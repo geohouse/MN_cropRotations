@@ -1,63 +1,114 @@
+from parso import parse
 import geopandas
 import pandas as pd
 from rasterstats import zonal_stats
+import os
 
 # Needs to be run in the Anaconda Powershell Prompt on Windows using:
 # python "C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\python\zonalStats.py"
 
-
+# Input geojson vector outlines for counties, range/township, sections to use when calculating the zonal stats on the rasters.
 counties  = geopandas.read_file(r"E:\USDA_CroplandDataLayers_MN\MN_boundaries_GeoJSON\MN_countyBoundaries_CRS5070.geojson")
+townRange = geopandas.read_file(r"E:\USDA_CroplandDataLayers_MN\MN_boundaries_GeoJSON\MN_townshipRangeBoundaries_CRS5070.geojson")
+sections = geopandas.read_file(r"E:\USDA_CroplandDataLayers_MN\MN_boundaries_GeoJSON\MN_sectionBoundaries_CRS5070.geojson")
 
-# Verify CRS
-counties.crs 
+# Dir containing the tiffs to process (1 per year transition) with the zonal stats at the county, township/range, and section levels
+inputDataPath = r"E:\USDA_CroplandDataLayers_MN\NumpyProcessed\changeCalcGeoTiffs"
 
-rasterTest = r"E:\USDA_CroplandDataLayers_MN\NumpyProcessed\changeCalcGeoTiffs\changeCalc_2008_2009.tiff"
+# For testing only
+inputDataPath = r"E:\USDA_CroplandDataLayers_MN\NumpyProcessed\changeCalcGeoTiffs\changeCalc_2008_2009.tiff"
 
-# Parse the 2 years being compared from the raster file name
-fromYear = rasterTest.split("changeCalc_")[1].split("_")[0]
-toYear = rasterTest.split(fromYear + "_")[1].split(".tiff")[0]
+outputDataPath = r"E:\USDA_CroplandDataLayers_MN\NumpyProcessed\changeCalcGeoTiffs\cropChangeProcessedForGraphing"
 
-# Using zonal_stats outputs a dict with the order of entries (keys) being the same as the order of 
-# features in the input vector file (i.e. for the counties, the key[0] corresponds to the zonal stats for 
-# Lake of the Woods county, which is the first feature in the file)
-zonalStats_counties = zonal_stats(vectors=counties['geometry'], raster = rasterTest, categorical = True) 
+def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, fromYear, toYear):
+    
+    print(f"Processing: {inputVector}")
+    print(f"At spatial scale: {spatialLevel}")
 
-# Number of entries in output list (each is a dict with key of the change code
-# and value as the number of pixels)
-len(zonalStats_counties)
+    print(f"The Vector CRS is: {inputVector.crs}")
 
-# This should equal the number of counties (or polygons to aggregate
-# by in the vector file)
-counties.shape[0]
+    # Using zonal_stats outputs a dict with the order of entries (keys) being the same as the order of 
+    # features in the input vector file (i.e. for the counties, the key[0] corresponds to the zonal stats for 
+    # Lake of the Woods county, which is the first feature in the file)
+    zonalStatsOutput = zonal_stats(vectors=inputVector['geometry'], raster = inputRaster, categorical = True) 
 
-len(zonalStats_counties) == counties.shape[0]
+    # Number of entries in output list (each is a dict with key of the change code
+    # and value as the number of pixels)
+    #len(zonalStatsOutput)
 
-# Transform the output results to a dataframe with the county as 
-# the row and the crop rotation code as the columns
-# filling in any NaN entries with 0 instead.
-zonalStats_counties_df = pd.DataFrame.from_dict(zonalStats_counties).fillna(0)
+    # This should equal the number of counties (or polygons to aggregate
+    # by in the vector file)
+    #counties.shape[0]
 
-# Convert entries from pixel counts to percentages of total number
-# of pixels for each county
-# axis 1 gets the sum for each county (row) across all land use transitions (columns)
-# Rounding to 2 decimals makes it so that the sums by county (row) at the end of this are >> 99%
-# Rounding to 1 decimal made the sums by county ~98% - >99%
-zonalStats_counties_df_perc = zonalStats_counties_df.apply(lambda x: round(x/x.sum()*100,2), axis = 1)
+    print(f"Do the num. results of zonal stats equal the number of input features? {len(zonalStatsOutput) == len(inputVector)}")
 
-# Make a re-naming dictionary needed to rename the rows of the dataframe from 
-# 0-86 (for counties) to the actual county names (from the 'COUN_LC' column)
+    # Transform the output results to a dataframe with the county as 
+    # the row and the crop rotation code as the columns
+    # filling in any NaN entries with 0 instead.
+    zonalStatsOutput_df = pd.DataFrame.from_dict(zonalStatsOutput).fillna(0)
 
-renameDict = {}
-for index in range(0,87):
-    renameDict[index] = counties['COUN_LC'][index]
-# Do the row re-naming
-zonalStats_counties_df_perc_rowNamed = zonalStats_counties_df_perc.rename(index = renameDict)
+    # Convert entries from pixel counts to percentages of total number
+    # of pixels for each county
+    # axis 1 gets the sum for each county (row) across all land use transitions (columns)
+    # Rounding to 2 decimals makes it so that the sums by county (row) at the end of this are >> 99%
+    # Rounding to 1 decimal made the sums by county ~98% - >99%
+    zonalStatsOutput_df_perc = zonalStatsOutput_df.apply(lambda x: round(x/x.sum()*100,2), axis = 1)
 
-# Now melt the df so that there is 1 row per county/crop code combination with the percentage of the county represented by 
-# that combination
-zonalStats_counties_df_perc_rowNamed_melt =  pd.melt(zonalStats_counties_df_perc_rowNamed, ignore_index = False)
+    # Make a re-naming dictionary needed to rename the rows of the dataframe from 
+    # 0-86 (for counties) to the actual county names (from the 'COUN_LC' column)
 
-# Remove any rows where the given crop rotation combo isn't present in the county (removes ~90% of rows)
-zonalStats_counties_df_perc_rowNamed_melt_short = zonalStats_counties_df_perc_rowNamed_melt[zonalStats_counties_df_perc_rowNamed_melt.percWithinCounty != 0.00]
+    renameDict = {}
+    for index in range(0,len(inputVector)):
+        renameDict[index] = inputVector[colForNames][index]
+    # Do the row re-naming
+    zonalStatsOutput_df_perc_rowNamed = zonalStatsOutput_df_perc.rename(index = renameDict)
 
+    
+    # Now melt the df so that there is 1 row per county/crop code combination with the percentage of the county represented by 
+    # that combination
+    zonalStatsOutput_df_perc_rowNamed_melt_base =  pd.melt(zonalStatsOutput_df_perc_rowNamed, ignore_index = False)
 
+    # Do column re-naming after melting
+    zonalStatsOutput_df_perc_rowNamed_melt = zonalStatsOutput_df_perc_rowNames_melt_base.rename(columns = {'variable': 'cropCode', 'value': 'percWithinZone'})
+
+    # Remove any rows where the given crop rotation combo isn't present in the county (removes ~90% of rows)
+    zonalStatsOutput_df_perc_rowNamed_melt_short = zonalStatsOutput_df_perc_rowNamed_melt[zonalStats_counties_df_perc_rowNamed_melt.percWithinZone != 0.00]
+
+    # Parse to crop code from the second year for the file being parsed. Parsed from the right 3 digits of the crop code
+    # then converted to int which removes any leading 0.
+    zonalStatsOutput_df_perc_rowNamed_melt_short['cropCodeTo'] = zonalStatsOutput_df_perc_rowNamed_melt_short['cropCode'].apply(lambda x: int(str(x)[-3:]))
+
+    # Parsing the from crop code is harder because it doesn't have leading 0 pads, so need to parse it using the total
+    # length of the entry. This causes errors when the full code is 0 or less than 3 digits, so need to deal with those cases here
+    def parseFromCropCode(inputCode):
+        # Shortest viable crop code (1 digit for from, 3 digits (with padding as needed) for to)
+        if len(str(inputCode)) >=4:
+            fromCode = str(inputCode)[0:len(str(inputCode)) - 3]
+            return fromCode
+        else:
+            return 0
+
+    zonalStatsOutput_df_perc_rowNamed_melt_short['cropCodeFrom'] = zonalStatsOutput_df_perc_rowNamed_melt_short['cropCode'].apply(parseFromCropCode)
+
+    # Add yearFrom and yearTo column entries to make sure all of the needed info is here
+    # When assign a single value to the column, it gets repeated as many times as rows and fills all column entries 
+    # automatically
+    zonalStatsOutput_df_perc_rowNamed_melt_short['yearFrom'] = int(fromYear)
+    zonalStatsOutput_df_perc_rowNamed_melt_short['yearTo'] = int(toYear)
+
+    outputFileName = f"cropRotationTabulatedForGraphing_{spatialLevel}_{fromYear}_{toYear}.csv"
+
+    zonalStatsOutput_df_perc_rowNamed_melt_short.to_csv(os.path.join(outputDataPath, outputFileName))
+
+with os.scandir(inputDataPath) as inputDirList:
+    for entry in inputDirList:
+        if entry.endswith(".tiff") and entry.is_file():
+            print(f"Processing {entry}")
+            # Parse the 2 years being compared from the raster file name
+            fromYear = entry.split("changeCalc_")[1].split("_")[0]
+            toYear = entry.split(fromYear + "_")[1].split(".tiff")[0]
+          
+            # Need to call the function 3 time for each input TIFF - 1 for each spatial scale to process.
+            #createSpatialStats(counties, os.path.join(inputDataPath,entry), "COUN_LC", "county", fromYear, toYear)
+            #createSpatialStats(townRange, os.path.join(inputDataPath,entry), "TWP_LABEL", "townshipRange", fromYear, toYear)
+            #createSpatialStats(sections, os.path.join(inputDataPath,entry), "SECT_LABEL", "section", fromYear, toYear)
