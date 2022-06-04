@@ -48,13 +48,17 @@ def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, from
     # filling in any NaN entries with 0 instead.
     zonalStatsOutput_df = pd.DataFrame.from_dict(zonalStatsOutput).fillna(0)
     print("Finished converting to data frame.")
+    
+    # Code below works correctly, but no longer converting to % here in Python and instead keeping as pixel counts
+    # so that I can tabulate total number of acres represented by each rotation for each area(30m pixels). Can calc % per 
+    # area in R script if needed.
     # Convert entries from pixel counts to percentages of total number
     # of pixels for each county
     # axis 1 gets the sum for each county (row) across all land use transitions (columns)
     # Rounding to 2 decimals makes it so that the sums by county (row) at the end of this are >> 99%
     # Rounding to 1 decimal made the sums by county ~98% - >99%
-    zonalStatsOutput_df_perc = zonalStatsOutput_df.apply(lambda x: round(x/x.sum()*100,2), axis = 1)
-    print("Finished calculating percentage from pixel numbers")
+    #zonalStatsOutput_df_perc = zonalStatsOutput_df.apply(lambda x: round(x/x.sum()*100,2), axis = 1)
+    #print("Finished calculating percentage from pixel numbers")
     # Make a re-naming dictionary needed to rename the rows of the dataframe from 
     # 0-86 (for counties) to the actual county names (from the 'COUN_LC' column)
 
@@ -62,18 +66,18 @@ def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, from
     for index in range(0,len(inputVector)):
         renameDict[index] = inputVector[colForNames][index]
     # Do the row re-naming
-    zonalStatsOutput_df_perc_rowNamed = zonalStatsOutput_df_perc.rename(index = renameDict)
+    zonalStatsOutput_df_rowNamed = zonalStatsOutput_df.rename(index = renameDict)
 
     
     # Now melt the df so that there is 1 row per county/crop code combination with the percentage of the county represented by 
     # that combination
-    zonalStatsOutput_df_perc_rowNamed_melt_base =  pd.melt(zonalStatsOutput_df_perc_rowNamed, ignore_index = False)
+    zonalStatsOutput_df_rowNamed_melt_base =  pd.melt(zonalStatsOutput_df_rowNamed, ignore_index = False)
     print("Finished melting into long format.")
     # Do column re-naming after melting
-    zonalStatsOutput_df_perc_rowNamed_melt = zonalStatsOutput_df_perc_rowNamed_melt_base.rename(columns = {'variable': 'cropCode', 'value': 'percWithinZone'})
+    zonalStatsOutput_df_rowNamed_melt = zonalStatsOutput_df_rowNamed_melt_base.rename(columns = {'variable': 'cropCode', 'value': 'numPixelsWiZone'})
 
     # Remove any rows where the given crop rotation combo isn't present in the county (removes ~90% of rows)
-    zonalStatsOutput_df_perc_rowNamed_melt_short = zonalStatsOutput_df_perc_rowNamed_melt[zonalStatsOutput_df_perc_rowNamed_melt.percWithinZone != 0.00]
+    zonalStatsOutput_df_rowNamed_melt_short = zonalStatsOutput_df_rowNamed_melt[zonalStatsOutput_df_rowNamed_melt.numPixelsWiZone != 0.00]
 
     # Parsing the from crop code is harder because it doesn't have leading 0 pads, so need to parse it using the total
     # length of the entry. This causes errors when the full code is 0 or less than 3 digits, so need to deal with those cases here
@@ -85,22 +89,22 @@ def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, from
         else:
             return 0
 
-    zonalStatsOutput_df_perc_rowNamed_melt_short['cropCodeFrom'] = zonalStatsOutput_df_perc_rowNamed_melt_short['cropCode'].apply(parseFromCropCode)
+    zonalStatsOutput_df_rowNamed_melt_short['cropCodeFrom'] = zonalStatsOutput_df_rowNamed_melt_short['cropCode'].apply(parseFromCropCode)
     
     # Parse to crop code from the second year for the file being parsed. Parsed from the right 3 digits of the crop code
     # then converted to int which removes any leading 0.
-    zonalStatsOutput_df_perc_rowNamed_melt_short['cropCodeTo'] = zonalStatsOutput_df_perc_rowNamed_melt_short['cropCode'].apply(lambda x: int(str(x)[-3:]))
+    zonalStatsOutput_df_rowNamed_melt_short['cropCodeTo'] = zonalStatsOutput_df_rowNamed_melt_short['cropCode'].apply(lambda x: int(str(x)[-3:]))
 
     print("Finished parsing crop codes.")
     # Add yearFrom and yearTo column entries to make sure all of the needed info is here
     # When assign a single value to the column, it gets repeated as many times as rows and fills all column entries 
     # automatically
-    zonalStatsOutput_df_perc_rowNamed_melt_short['yearFrom'] = int(fromYear)
-    zonalStatsOutput_df_perc_rowNamed_melt_short['yearTo'] = int(toYear)
+    zonalStatsOutput_df_rowNamed_melt_short['yearFrom'] = int(fromYear)
+    zonalStatsOutput_df_rowNamed_melt_short['yearTo'] = int(toYear)
 
     outputFileName = f"cropRotationTabulatedForGraphing_{spatialLevel}_{fromYear}_{toYear}.csv"
     print("Writing output.")
-    zonalStatsOutput_df_perc_rowNamed_melt_short.to_csv(os.path.join(outputDataPath, outputFileName))
+    zonalStatsOutput_df_rowNamed_melt_short.to_csv(os.path.join(outputDataPath, outputFileName))
     print("Finished writing output.")
 
 with os.scandir(inputDataPath) as inputDirList:
