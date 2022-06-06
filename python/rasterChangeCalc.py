@@ -102,7 +102,7 @@ for index in range(0,len(yearsToProcess) - 1):
         #  -------------- 
         #   2   |   3
         
-        # Commented out for testing but operational
+        
         for quadrant in range(0,4):
             if quadrant == 0:
                 # Indexing works like range - will go to raster_halfHeight - 1

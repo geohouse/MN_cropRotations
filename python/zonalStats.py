@@ -59,6 +59,7 @@ def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, from
     # Rounding to 1 decimal made the sums by county ~98% - >99%
     #zonalStatsOutput_df_perc = zonalStatsOutput_df.apply(lambda x: round(x/x.sum()*100,2), axis = 1)
     #print("Finished calculating percentage from pixel numbers")
+    
     # Make a re-naming dictionary needed to rename the rows of the dataframe from 
     # 0-86 (for counties) to the actual county names (from the 'COUN_LC' column)
 
@@ -69,7 +70,7 @@ def createSpatialStats(inputVector, inputRaster, colForNames, spatialLevel, from
     zonalStatsOutput_df_rowNamed = zonalStatsOutput_df.rename(index = renameDict)
 
     
-    # Now melt the df so that there is 1 row per county/crop code combination with the percentage of the county represented by 
+    # Now melt the df so that there is 1 row per county/crop code combination with the number of pixels of the county represented by 
     # that combination
     zonalStatsOutput_df_rowNamed_melt_base =  pd.melt(zonalStatsOutput_df_rowNamed, ignore_index = False)
     print("Finished melting into long format.")

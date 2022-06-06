@@ -44,6 +44,13 @@ cropsKey <- list(`1` = "corn",`2` = "cotton",`3` = "rice",`4` = "sorghum",
                  `248` = "eggplant", `249` = "gourds", `250` = "cranberries",
                  `254` = "double crop barley/soy")
 
+# Lookup the crop names from the crop codes
+lookupCrop <- function(inputCode){
+    cropName <- unlist(cropsKey[which(names(cropsKey) == inputCode)])
+    return(cropName)
+}
+
+
 # Working POC for lookup
 #test2 <- unlist(cropsKey[which(names(cropsKey) == test)])
 
@@ -51,18 +58,66 @@ cropsKey <- list(`1` = "corn",`2` = "cotton",`3` = "rice",`4` = "sorghum",
 pixelSizeSqM <- 900
 pixelSizeAcres <- 0.222395
 
-test <- read.table("E:/USDA_CroplandDataLayers_MN/NumpyProcessed/changeCalcGeoTiffs/cropChangeProcessedForGraphing/cropRotationTabulatedForGraphing_county_2008_2009.csv", sep = ",", header = T)
+test <- read.table("E:/USDA_CroplandDataLayers_MN/NumpyProcessed/changeCalcGeoTiffs/cropChangeProcessedForGraphing/cropRotationTabulatedForGraphing_county_2020_2021.csv", sep = ",", header = T)
 
 test_agg <- test %>% group_by(cropCode, cropCodeFrom, cropCodeTo) %>% 
   filter(cropCodeFrom %in% crops & cropCodeTo %in% crops) %>%
   summarise(totalPixels = sum(numPixelsWiZone)) %>% arrange(desc(totalPixels)) %>%
   mutate(areaAcres = totalPixels * pixelSizeAcres)
 
+fromCropName <- unlist(lapply(test_agg$cropCodeFrom, FUN = lookupCrop))
+toCropName <- unlist(lapply(test_agg$cropCodeTo, FUN = lookupCrop))
+
+test_agg$fromCropName <- fromCropName
+test_agg$toCropName <- toCropName
+
+hist(log10(test_agg$areaAcres))
 
 
-
-for(year in seq(2008,2021)){
+for(year in seq(2008,2020)){
+  
+  # quality check to make sure the crop acreages match for same years across rotations
+  # (i.e. that 2008 corn acreage measured both from 2007-2008 and 2008-2009 datasets
+  # is the same)
   print(year)
+  # Testing only
+  #year <- 2019
+  
+  currFileName <- paste0("E:/USDA_CroplandDataLayers_MN/NumpyProcessed/changeCalcGeoTiffs/cropChangeProcessedForGraphing/cropRotationTabulatedForGraphing_county_", year, "_", year + 1, ".csv")
+  currRotationResults <- read.table(currFileName, sep = ",", header = T)
+  
+  # Screen out just the crop rows
+  currRotationResults_cropsOnly <- currRotationResults %>%
+    filter(cropCodeFrom %in% crops & cropCodeTo %in% crops)
+    
+  # Add the crop names
+  fromCropName <- unlist(lapply(currRotationResults_cropsOnly$cropCodeFrom, FUN = lookupCrop))
+  toCropName <- unlist(lapply(currRotationResults_cropsOnly$cropCodeTo, FUN = lookupCrop))
+  
+  currRotationResults_cropsOnly$fromCropName <- fromCropName
+  currRotationResults_cropsOnly$toCropName <- toCropName
+  
+  currRotationResults_areaTabByCrop_from <- currRotationResults_cropsOnly %>% group_by(fromCropName) %>%
+    summarise(totalPixels = sum(numPixelsWiZone)) %>% arrange(desc(totalPixels)) %>%
+    mutate(areaAcres = totalPixels * pixelSizeAcres)
+  
+  names(currRotationResults_areaTabByCrop_from) <- c(paste0("fromCropName_", year),paste0("fromCropTotalPixels_", year), paste0("fromCropAreaAcres_", year))
+  
+  currRotationResults_areaTabByCrop_to <- currRotationResults_cropsOnly %>% group_by(toCropName) %>%
+    summarise(totalPixels = sum(numPixelsWiZone)) %>% arrange(desc(totalPixels)) %>%
+    mutate(areaAcres = totalPixels * pixelSizeAcres)
+  
+  names(currRotationResults_areaTabByCrop_to) <- c(paste0("toCropName_", year + 1),paste0("toCropTotalPixels_", year + 1), paste0("toCropAreaAcres_", year + 1))
+  
+  # If the first year, initialize the results holder, else join to the existing holder
+  if(year == 2008){
+    resultsHolder <- currRotationResults_areaTabByCrop_from
+    resultsHolder <- dplyr::full_join(resultsHolder, currRotationResults_areaTabByCrop_to, by = c("fromCropName_2008" = "toCropName_2009"))
+  } else{
+    resultsHolder <- dplyr::full_join(resultsHolder, currRotationResults_areaTabByCrop_from, by = c("fromCropName_2008" = paste0("fromCropName_",year)))
+    resultsHolder <- dplyr::full_join(resultsHolder, currRotationResults_areaTabByCrop_to, by = c("fromCropName_2008" = paste0("toCropName_",year + 1)))
+    
+  }
   
   
 }
