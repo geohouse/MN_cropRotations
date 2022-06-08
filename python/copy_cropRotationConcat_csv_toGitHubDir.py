@@ -59,10 +59,53 @@ def copyDirsFiles(root, dirs, files, type):
             print(f"Copied file for county: {countyName}")
         else:
             print(f"Could not find the expected file for county: {countyName}. Skipping")
+    
     if type == "tr-subset":
-        pass
+        print("In TR subset")
+        # First copy the TR allYears file
+        trName = root.split("\\")[-1]
+        # Make the directory
+        os.makedirs(os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName), exist_ok=True)
+        expectedFileName = trName + "_allYears.csv"
+        print(expectedFileName)
+        if expectedFileName in files:
+            shutil.copyfile(os.path.join(root, expectedFileName), os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName, expectedFileName))
+            print(f"Copied file for TR: {trName}")
+        else:
+            print(f"Could not find the expected file for TR: {trName}. Skipping")
+        
+        # Next, create the section subdirs, and copy the section allYears files to each of the subdirs
+        for sectionDir in dirs:
+            # Make the sub-directory
+            os.makedirs(os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName, sectionDir), exist_ok = True)
+            expectedFileName = sectionDir + "_allYears.csv"
+            print(expectedFileName)
+
+            # Need to get a list of the files within the section folder. Do that with os.walk, which should only
+            # have 1 iteration, because there are no sub-directories within the section dirs
+            for (secDirPath, secDirNames, secFileNames) in os.walk(os.path.join(pathToLocalDir, "imgData", "tr_sec", trName, sectionDir)):
+                if expectedFileName in secFileNames:
+                    shutil.copyfile(os.path.join(secDirPath, expectedFileName), os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName, sectionDir, expectedFileName))
+                    print(f"Copied file for Section: {sectionDir}")
+                else:
+                    print(f"Could not find the expected file for Section: {sectionDir}. Skipping")
+                # Ensure walk doesn't go beyond 1 iter per dir (shouldn't because there are no sub dirs, but
+                # this makes sure)
+                break
+
+ 
     if type == "tr-no-subset":
-        pass
+        print("In TR no subset")
+        trName = root.split("\\")[-1]
+        # Make the directory
+        os.makedirs(os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName), exist_ok=True)
+        expectedFileName = trName + "_allYears.csv"
+        print(expectedFileName)
+        if expectedFileName in files:
+            shutil.copyfile(os.path.join(root, expectedFileName), os.path.join(pathToGitHubDir, "imgData", "tr_sec", trName, expectedFileName))
+            print(f"Copied file for TR: {trName}")
+        else:
+            print(f"Could not find the expected file for TR: {trName}. Skipping")
 
 
 for(root, dirs, files) in os.walk(os.path.join(pathToLocalDir, "imgData"), topdown=True):
@@ -76,45 +119,52 @@ for(root, dirs, files) in os.walk(os.path.join(pathToLocalDir, "imgData"), topdo
         copyDirsFiles(root, dirs, files, "cnty")
 
     # If the current root is a township/range directory
-#     if(townRangeDirCheck.search(root)):
+    if(townRangeDirCheck.search(root)):
 
-#         #print(root)
-#         TR_looped += 1
-#         currTown = int(root.split("\\")[-1].split("_")[0].split("T")[1])
-#         currRange = int(root.split("\\")[-1].split("_")[1].split("R")[1].split("W")[0])
-#         #print(f"{currTown} {currRange}")
-#         TR_list.append(f"{currTown}_{currRange}")
-#         if(TR_looped % 100 == 0):
-#             print(f"Processed {TR_looped} TRs")
+        #print(root)
+        TR_looped += 1
+        currTown = int(root.split("\\")[-1].split("_")[0].split("T")[1])
+        currRange = int(root.split("\\")[-1].split("_")[1].split("R")[1].split("W")[0])
+        #print(f"{currTown} {currRange}")
+        TR_list.append(f"{currTown}_{currRange}")
+        if(TR_looped % 100 == 0):
+            print(f"Processed {TR_looped} TRs")
 
-#         if currTown < 33 and currRange < 33:
-#             TR_count_sectionSubset += 1
-#             #print("in subset")
-#             countOfSubsetSections += len(dirs)
-#             continue
-#         elif currTown > 100 and currTown < 122:
-#             TR_count_sectionSubset += 1
-#             #print("in subset")
-#             countOfSubsetSections += len(dirs)
-#             continue
-#         elif currTown < 125 and currRange > 39:
-#             TR_count_sectionSubset += 1
-#             #print("in subset")
-#             countOfSubsetSections += len(dirs)
-#             continue
-#         elif currTown >= 125 and currRange > 43:
-#             TR_count_sectionSubset += 1
-#             #print("in subset")
-#             countOfSubsetSections += len(dirs)
-#             continue
+        if currTown < 33 and currRange < 33:
+            TR_count_sectionSubset += 1
+            #print("in subset")
+            countOfSubsetSections += len(dirs)
+            copyDirsFiles(root, dirs, files, "tr-subset")
+            continue
+        elif currTown > 100 and currTown < 122:
+            TR_count_sectionSubset += 1
+            #print("in subset")
+            countOfSubsetSections += len(dirs)
+            copyDirsFiles(root, dirs, files, "tr-subset")
+            continue
+        elif currTown < 125 and currRange > 39:
+            TR_count_sectionSubset += 1
+            #print("in subset")
+            countOfSubsetSections += len(dirs)
+            copyDirsFiles(root, dirs, files, "tr-subset")
+            continue
+        elif currTown >= 125 and currRange > 43:
+            TR_count_sectionSubset += 1
+            #print("in subset")
+            countOfSubsetSections += len(dirs)
+            copyDirsFiles(root, dirs, files, "tr-subset")
+            continue
+        else:
+            # Else this is not a TR to include the section data with for the GitHub repo
+            copyDirsFiles(root, dirs, files, "tr-no-subset")
 
     
-#     #print(dirs)
-#     #print(files)
+    #print(dirs)
+    #print(files)
 
-# print(f"The count of the TRs that would be kept for section mapping is: {TR_count_sectionSubset}.")
-# print(TR_list)
-# print(len(TR_list))
-# print(f"The number of subset sections is: {countOfSubsetSections}")
+print(f"The count of the TRs that would be kept for section mapping is: {TR_count_sectionSubset}.")
+print(TR_list)
+print(len(TR_list))
+print(f"The number of subset sections is: {countOfSubsetSections}")
 # Walk through the imgData directory in the local dir, copy 
 #"C:\Users\Geoffrey House User\Downloads\test.csv"
