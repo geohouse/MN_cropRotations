@@ -120,4 +120,46 @@ for(year in seq(2008,2020)){
   }
   
   
+  # Separate test to see what the largest rotations are (top 6 crops to/from each other
+  # and to/from Other)
+  
+  rotationTabulate <- currRotationResults %>% mutate(cropFrom = case_when(
+    cropCodeFrom == 1 ~ "corn",
+    cropCodeFrom == 5 ~ "soy",
+    cropCodeFrom == 23 ~ "springWheat",
+    cropCodeFrom == 36 | cropCodeFrom == 37 ~ "hay",
+    cropCodeFrom == 41 ~ "sugarbeets",
+    cropCodeFrom == 42 ~ "dryBeans",
+    TRUE ~ "other"
+  ), cropTo = case_when(
+    cropCodeTo == 1 ~ "corn",
+    cropCodeTo == 5 ~ "soy",
+    cropCodeTo == 23 ~ "springWheat",
+    cropCodeTo == 36 | cropCodeFrom == 37 ~ "hay",
+    cropCodeTo == 41 ~ "sugarbeets",
+    cropCodeTo == 42 ~ "dryBeans",
+    TRUE ~ "other"
+  )) %>% mutate(cropRotate = paste(cropFrom,cropTo, sep = "_"))
+  
+  rotationTotalAreaTabulate <- rotationTabulate %>% select(numPixelsWiZone, 
+                                                           yearFrom,
+                                                           yearTo,
+                                                           cropRotate) %>%
+    group_by(cropRotate, yearFrom, yearTo) %>%
+    summarise(totalRotationPixels = sum(numPixelsWiZone))
+  
+  totalPix <- sum(rotationTotalAreaTabulate$totalRotationPixels)
+  print(totalPix)
+  if(year == 2008){
+    totalRotationAreaTabulate <- rotationTotalAreaTabulate
+    totalPixTabulate <- totalPix
+  } else{
+    totalRotationAreaTabulate <- dplyr::left_join(totalRotationAreaTabulate, rotationTotalAreaTabulate, by = c("cropRotate" = "cropRotate"))
+    totalPixTabulate <- c(totalPixTabulate, totalPix)
+  }
+  
 }
+
+
+totalRotationAreaTabulate_pixColumns <- totalRotationAreaTabulate %>% group_by(cropRotate) %>% select(starts_with("totalRotationPixels"))
+totalRotationAreaTabulate_pixColumns$totalPixCount <- rowSums(totalRotationAreaTabulate_pixColumns[,2:ncol(totalRotationAreaTabulate_pixColumns_df)])
