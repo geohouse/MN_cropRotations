@@ -113,16 +113,18 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   yearTo == 2018 ~ 225,
   yearTo == 2019 ~ 202.5,
   yearTo == 2020 ~ 180,
-  yearTo == 2021 ~ 157.5)) %>% mutate(percTotalPixelsWiZone = numPixelsWiZone / unique(currYearTotalPixelNumHolder$totalPixels))
+  yearTo == 2021 ~ 157.5))
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
-           plotThetaTo, cropFrom, cropTo) %>% summarise(totalNumPixels = sum(numPixelsWiZone))
+           plotThetaTo, cropFrom, cropTo) %>% summarise(totalNumPixels = sum(numPixelsWiZone),
+                                                        totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
 
 # For testing. Open in Excel and use Pivot table with year to/from crop to/from and numPixels
 # to verify that the num pixels for each cover type across all rotation types (i.e. corn) is identical
 # between the 'from' year count and the 'to' year count. They should be, now that I've made the 'other'
-# category, and they are.
+# category, and they are. Also confirmed that the total percent of cover across the 7 types is 
+# 100% for each year.
 
 write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Downloads/otterTailTest.csv", row.names = F, sep = ",")
                                                       
