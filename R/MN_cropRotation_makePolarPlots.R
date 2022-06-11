@@ -4,7 +4,9 @@ library("dplyr")
 otterTailTest <- read.table("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Otter_Tail/Otter_Tail_allYears.csv", header = T, sep = ",")
 
 # Get total area of each of the areas (total num pixels) for all of the years
-# This will be used as denom to make percentage of the area.
+# This will eventually be used as denom to make percentage of the area.
+currYearTotalPixelNumHolder <- otterTailTest %>% group_by(X, yearFrom) %>% summarise(totalPixels = sum(numPixelsWiZone))
+  
 
 # The 6 most planted crops across all years are the ones plotted here
 # Code  Crop
