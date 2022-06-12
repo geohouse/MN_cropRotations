@@ -113,12 +113,30 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   yearTo == 2018 ~ 225,
   yearTo == 2019 ~ 202.5,
   yearTo == 2020 ~ 180,
-  yearTo == 2021 ~ 157.5))
+  yearTo == 2021 ~ 157.5)) %>% mutate(plottingColorFrom = case_when(
+    cropFrom == "corn" ~ "#ffd300",
+    cropFrom == "soy" ~ "#267000",
+    cropFrom == "springWheat" ~ "#d8b56b",
+    cropFrom == "sugarbeets" ~ "#a800e2",
+    cropFrom == "dryBeans" ~ "#a50000",
+    cropFrom == "hay" ~ "#ffa5e2",
+    cropFrom == "other" ~ "#888888"
+  )) %>% mutate(plottingColorTo = case_when(
+    cropTo == "corn" ~ "#ffd300",
+    cropTo == "soy" ~ "#267000",
+    cropTo == "springWheat" ~ "#d8b56b",
+    cropTo == "sugarbeets" ~ "#a800e2",
+    cropTo == "dryBeans" ~ "#a50000",
+    cropTo == "hay" ~ "#ffa5e2",
+    cropTo == "other" ~ "#888888"
+  ))
+
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
-           plotThetaTo, cropFrom, cropTo) %>% summarise(totalNumPixels = sum(numPixelsWiZone),
-                                                        totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
+           plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo) %>% 
+  summarise(totalNumPixels = sum(numPixelsWiZone),
+            totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
 
 # For testing. Open in Excel and use Pivot table with year to/from crop to/from and numPixels
 # to verify that the num pixels for each cover type across all rotation types (i.e. corn) is identical
@@ -129,3 +147,22 @@ rotationTabulate_cropRotationYear <- rotationLabel %>%
 write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Downloads/otterTailTest.csv", row.names = F, sep = ",")
                                                       
 
+test <- data.frame(r = c(1,3,2,5,4,2,1), t = c(0,22.5,45,90,180,270,360))
+
+polar <- plot_ly(
+  type = 'scatterpolar',
+  r = test$r,
+  theta = test$t,
+  mode = "lines"
+)
+polar
+
+polar_crop <- plot_ly(
+  type = 'scatterpolar',
+  r = rotationTabulate_cropRotationYear$plotRadTo,
+  theta = rotationTabulate_cropRotationYear$plotThetaTo,
+  mode = "lines"
+)
+polar_crop
+
+htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
