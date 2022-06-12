@@ -69,21 +69,21 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   cropCodeTo == 42 ~ "dryBeans",
   TRUE ~ "other"
 )) %>% mutate(cropRotate = paste(cropFrom,cropTo, sep = "_")) %>% mutate(plotRadFrom = case_when(
-  cropFrom == "corn" ~ 7,
-  cropFrom == "soy" ~ 6,
-  cropFrom == "springWheat" ~ 5,
-  cropFrom == "sugarbeets" ~ 4,
-  cropFrom == "dryBeans" ~ 3,
-  cropFrom == "hay" ~ 2,
-  cropFrom == "other" ~ 1
+  cropFrom == "corn" ~ 6,
+  cropFrom == "soy" ~ 5,
+  cropFrom == "springWheat" ~ 3,
+  cropFrom == "sugarbeets" ~ 2,
+  cropFrom == "dryBeans" ~ 1,
+  cropFrom == "hay" ~ 4,
+  cropFrom == "other" ~ 7
 )) %>% mutate(plotRadTo = case_when(
-  cropTo == "corn" ~ 7,
-  cropTo == "soy" ~ 6,
-  cropTo == "springWheat" ~ 5,
-  cropTo == "sugarbeets" ~ 4,
-  cropTo == "dryBeans" ~ 3,
-  cropTo == "hay" ~ 2,
-  cropTo == "other" ~ 1
+  cropTo == "corn" ~ 6,
+  cropTo == "soy" ~ 5,
+  cropTo == "springWheat" ~ 3,
+  cropTo == "sugarbeets" ~ 2,
+  cropTo == "dryBeans" ~ 1,
+  cropTo == "hay" ~ 4,
+  cropTo == "other" ~ 7
 )) %>% mutate(plotThetaFrom = case_when(
   yearFrom == 2008 ~ 90,
   yearFrom == 2009 ~ 67.5,
@@ -165,4 +165,4 @@ polar_crop <- plot_ly(
 )
 polar_crop
 
-htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
+#htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
