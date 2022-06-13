@@ -129,12 +129,62 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropTo == "dryBeans" ~ "#a50000",
     cropTo == "hay" ~ "#ffa5e2",
     cropTo == "other" ~ "#888888"
-  ))
+  )) %>% mutate(plotXAxisFrom = case_when(
+    yearFrom == 2008 ~ 1,
+    yearFrom == 2009 ~ 2,
+    yearFrom == 2010 ~ 3,
+    yearFrom == 2011 ~ 4,
+    yearFrom == 2012 ~ 5,
+    yearFrom == 2013 ~ 6,
+    yearFrom == 2014 ~ 7,
+    yearFrom == 2015 ~ 8,
+    yearFrom == 2016 ~ 9,
+    yearFrom == 2017 ~ 10,
+    yearFrom == 2018 ~ 11,
+    yearFrom == 2019 ~ 12,
+    yearFrom == 2020 ~ 13,
+    yearFrom == 2021 ~ 14 
+  )) %>% mutate(plotXAxisTo = case_when(
+    yearTo == 2008 ~ 1,
+    yearTo == 2009 ~ 2,
+    yearTo == 2010 ~ 3,
+    yearTo == 2011 ~ 4,
+    yearTo == 2012 ~ 5,
+    yearTo == 2013 ~ 6,
+    yearTo == 2014 ~ 7,
+    yearTo == 2015 ~ 8,
+    yearTo == 2016 ~ 9,
+    yearTo == 2017 ~ 10,
+    yearTo == 2018 ~ 11,
+    yearTo == 2019 ~ 12,
+    yearTo == 2020 ~ 13,
+    yearTo == 2021 ~ 14 
+  )) %>% mutate(plotYAxisFrom = case_when(
+    cropFrom == "corn" ~ 7,
+    cropFrom == "soy" ~ 6,
+    cropFrom == "springWheat" ~ 4,
+    cropFrom == "sugarbeets" ~ 3,
+    cropFrom == "dryBeans" ~ 2,
+    cropFrom == "hay" ~ 5,
+    cropFrom == "other" ~ 1
+  )) %>% mutate(plotYAxisTo = case_when(
+    cropTo == "corn" ~ 7,
+    cropTo == "soy" ~ 6,
+    cropTo == "springWheat" ~ 4,
+    cropTo == "sugarbeets" ~ 3,
+    cropTo == "dryBeans" ~ 2,
+    cropTo == "hay" ~ 5,
+    cropTo == "other" ~ 1
+  )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
+  mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
+  mutate(yEndFrom = (m * (plotXAxisFrom + 0.3)) + b) %>%
+  mutate(yEndTo = (m * (plotXAxisTo - 0.3)) + b)
 
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
-           plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo) %>% 
+           plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
+           plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo) %>% 
   summarise(totalNumPixels = sum(numPixelsWiZone),
             totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
 
