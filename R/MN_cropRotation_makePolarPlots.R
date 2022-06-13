@@ -178,13 +178,16 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
   mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
   mutate(yEndFrom = (m * (plotXAxisFrom + 0.3)) + b) %>%
-  mutate(yEndTo = (m * (plotXAxisTo - 0.3)) + b)
+  mutate(yEndTo = (m * (plotXAxisTo - 0.3)) + b) %>%
+  mutate(xEndFrom = plotXAxisFrom + 0.3) %>%
+  mutate(xEndTo = plotXAxisTo - 0.3)
 
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
            plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
-           plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo) %>% 
+           plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo,
+           xEndFrom, xEndTo) %>% 
   summarise(totalNumPixels = sum(numPixelsWiZone),
             totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
 
@@ -216,3 +219,9 @@ polar_crop <- plot_ly(
 polar_crop
 
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
+
+test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom)) + 
+  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo, size = 3), data = rotationTabulate_cropRotationYear) + 
+  geom_point(size = 6)
+test
