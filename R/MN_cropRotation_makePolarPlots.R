@@ -1,6 +1,6 @@
 library("plotly")
 library("dplyr")
-
+library("ggplot2")
 currArea <- "Otter_Tail"
 
 currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/", currArea, "/", currArea,"_allYears.csv"), header = T, sep = ",")
@@ -177,17 +177,27 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropTo == "other" ~ 1
   )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
   mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
-  mutate(yEndFrom = (m * (plotXAxisFrom + 0.3)) + b) %>%
-  mutate(yEndTo = (m * (plotXAxisTo - 0.3)) + b) %>%
-  mutate(xEndFrom = plotXAxisFrom + 0.3) %>%
-  mutate(xEndTo = plotXAxisTo - 0.3)
+  mutate(yEndFrom = (m * (plotXAxisFrom + 0.2)) + b) %>%
+  mutate(yEndTo = (m * (plotXAxisTo - 0.2)) + b) %>%
+  mutate(xEndFrom = plotXAxisFrom + 0.2) %>%
+  mutate(xEndTo = plotXAxisTo - 0.2) %>%
+  mutate(yEndTo_revised = case_when(
+    plotYAxisTo == 1 ~ 1 + ((plotYAxisFrom/10) - 0.1),
+    plotYAxisTo == 7 ~ 7 - ((7 - plotYAxisFrom) / 10),
+    TRUE ~ plotYAxisTo + ((plotYAxisFrom - 4)/10) 
+  )) %>%
+  mutate(yEndFrom_revised = case_when(
+    plotYAxisFrom == 1 ~ 1 + ((plotYAxisTo/10) - 0.1),
+    plotYAxisFrom == 7 ~ 7 - ((7 - plotYAxisTo) / 10),
+    TRUE ~ plotYAxisFrom + ((plotYAxisTo - 4)/10) 
+  ))
 
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
            plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
            plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo,
-           xEndFrom, xEndTo) %>% 
+           xEndFrom, xEndTo, yEndFrom_revised, yEndTo_revised) %>% 
   summarise(totalNumPixels = sum(numPixelsWiZone),
             totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
 
@@ -220,8 +230,13 @@ polar_crop
 
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
 
-test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom)) + 
-  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom), data = rotationTabulate_cropRotationYear) + 
-  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo, size = 3), data = rotationTabulate_cropRotationYear) + 
-  geom_point(size = 6)
+test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
+  #geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+  geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
+  geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+  # geom_segment(aes(x = xEndFrom, y = yEndFrom_revised, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+  # 
+    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom), size = 2, data = rotationTabulate_cropRotationYear) +  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo), size = 2, data = rotationTabulate_cropRotationYear) + theme_bw() + scale_color_identity()
 test
