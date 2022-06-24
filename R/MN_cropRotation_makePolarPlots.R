@@ -1,6 +1,7 @@
 library("plotly")
 library("dplyr")
 library("ggplot2")
+library("svglite")
 currArea <- "Otter_Tail"
 
 currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/", currArea, "/", currArea,"_allYears.csv"), header = T, sep = ",")
@@ -311,12 +312,20 @@ polar_crop
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
 
 test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
-  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
-  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
   #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
-  geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
   # 
-    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom), data = rotationTabulate_cropRotationYear) +  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo), data = rotationTabulate_cropRotationYear) + theme_bw() + scale_color_identity()
+    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 5), data = rotationTabulate_cropRotationYear, show.legend = FALSE) +  
+  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 5), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+  theme_bw() + scale_color_identity() + theme(axis.title.x=element_blank(),
+                                              axis.text.x=element_blank(),
+                                              axis.text.y = element_blank(),
+                                              axis.title.y = element_blank(),
+                                              axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
 test
+
+ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/Otter Tail/Otter Tail.svg", plot=test, width=3, height=3)

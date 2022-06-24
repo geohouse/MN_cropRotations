@@ -1,9 +1,9 @@
 mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg';
 
-const stateToCountyZoomThresh = 7;
-const countyToTRZoomThresh = 9;
-const TRtoSectionZoomThresh = 11;
-const maxZoomLevel = 12; // was 22
+const stateToCountyZoomThresh = 8;
+const countyToTRZoomThresh = 10;
+const TRtoSectionZoomThresh = 13;
+const maxZoomLevel = 22; // was 22
 
 // Will need to implement clustering and zoom levels to show these data (~12Mb)
 //let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_sectionCentroids_CRS4326_v2.geojson";
@@ -188,7 +188,7 @@ map.on('load', () => {
         'type': 'line',
         'paint':{
             'line-color': '#fff',
-            'line-width': 15
+            'line-width': 2
         }
     });
 
