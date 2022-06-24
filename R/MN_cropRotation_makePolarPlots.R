@@ -52,6 +52,19 @@ if(length(unique(currYearTotalPixelNumHolder$totalPixels)) != 1){
 # 2020 = 180
 # 2021 = 157.5
 
+# This is a 2-index lookup to get the y axis end point of a line connecting
+# any two crops in either direction.
+# Crops are coded:
+# 7 - corn
+# 6 - soy
+# 5 - hay
+# 4 - spring wheat
+# 3 - sugarbeets
+# 2 - dry beans
+# 1 - other
+# To use this lookup for the
+yLineEndLookupList <- list(seq(6.4,5.8, by = -0.1), seq(5.6,5.0,by = -0.1), seq(4.8,4.2,by = -0.1), seq(4.0,3.4, by = -0.1), seq(3.2,2.6, by = -0.1), seq(2.4, 1.8, by = -0.1), seq(1.6,1.1, by = -0.1))
+
 rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   cropCodeFrom == 1 ~ "corn",
   cropCodeFrom == 5 ~ "soy",
@@ -160,14 +173,22 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     yearTo == 2020 ~ 13,
     yearTo == 2021 ~ 14 
   )) %>% mutate(plotYAxisFrom = case_when(
-    cropFrom == "corn" ~ 7,
-    cropFrom == "soy" ~ 6,
-    cropFrom == "springWheat" ~ 4,
-    cropFrom == "sugarbeets" ~ 3,
-    cropFrom == "dryBeans" ~ 2,
-    cropFrom == "hay" ~ 5,
+    cropFrom == "corn" ~ 6.4,
+    cropFrom == "soy" ~ 5.5,
+    cropFrom == "springWheat" ~ 3.7,
+    cropFrom == "sugarbeets" ~ 2.8,
+    cropFrom == "dryBeans" ~ 1.9,
+    cropFrom == "hay" ~ 4.6,
     cropFrom == "other" ~ 1
   )) %>% mutate(plotYAxisTo = case_when(
+    cropTo == "corn" ~ 6.4,
+    cropTo == "soy" ~ 5.5,
+    cropTo == "springWheat" ~ 3.7,
+    cropTo == "sugarbeets" ~ 2.8,
+    cropTo == "dryBeans" ~ 1.9,
+    cropTo == "hay" ~ 4.6,
+    cropTo == "other" ~ 1
+  )) %>% mutate(cropOrderTo = case_when(
     cropTo == "corn" ~ 7,
     cropTo == "soy" ~ 6,
     cropTo == "springWheat" ~ 4,
@@ -175,7 +196,15 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropTo == "dryBeans" ~ 2,
     cropTo == "hay" ~ 5,
     cropTo == "other" ~ 1
-  )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
+  )) %>% mutate(cropOrderFrom = case_when(
+    cropFrom == "corn" ~ 7,
+    cropFrom == "soy" ~ 6,
+    cropFrom == "springWheat" ~ 4,
+    cropFrom == "sugarbeets" ~ 3,
+    cropFrom == "dryBeans" ~ 2,
+    cropFrom == "hay" ~ 5,
+    cropFrom == "other" ~ 1
+  ))mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
   mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
   mutate(yEndFrom = (m * (plotXAxisFrom + 0.2)) + b) %>%
   mutate(yEndTo = (m * (plotXAxisTo - 0.2)) + b) %>%
@@ -190,7 +219,9 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     plotYAxisFrom == 1 ~ 1 + ((plotYAxisTo/10) - 0.1),
     plotYAxisFrom == 7 ~ 7 - ((7 - plotYAxisTo) / 10),
     TRUE ~ plotYAxisFrom + ((plotYAxisTo - 4)/10) 
-  ))
+  )) %>% mutate(yEndTo_flowUpdated = case_when(
+    cropTo == "corn" ~ 
+  )
 
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
@@ -231,11 +262,11 @@ polar_crop
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
 
 test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
-  #geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
   geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-  geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
+  #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
   geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-  # geom_segment(aes(x = xEndFrom, y = yEndFrom_revised, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+   geom_segment(aes(x = xEndFrom, y = yEndFrom_revised, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
   # 
     geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom), size = 2, data = rotationTabulate_cropRotationYear) +  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo), size = 2, data = rotationTabulate_cropRotationYear) + theme_bw() + scale_color_identity()
