@@ -64,8 +64,8 @@ if(length(unique(currYearTotalPixelNumHolder$totalPixels)) != 1){
 # 1 - other
 # To use this lookup for getting the y axis ends of the connector lines, double index
 # with the 'from' crop code first, then the 'to' crop code. E.g.
-# From corn to other is accessed [[7]][1] and gives 1.6
-# From other to corn is accessed [[1]][7] and gives 5.8
+# From corn to other is accessed [[7]][1] and gives 1.6 ('from' wrt corn)
+# From other to corn is accessed [[1]][7] and gives 5.8 ('to' wrt corn)
 # From corn to corn is accessed [[7]][7] and gives 6.4
 # From sugarbeets to hay is accessed [[3]][5] and gives 3.0
 
@@ -213,7 +213,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropFrom == "dryBeans" ~ 2,
     cropFrom == "hay" ~ 5,
     cropFrom == "other" ~ 1
-  ))mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
+  )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
   mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
   mutate(yEndFrom = (m * (plotXAxisFrom + 0.2)) + b) %>%
   mutate(yEndTo = (m * (plotXAxisTo - 0.2)) + b) %>%
@@ -228,24 +228,64 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     plotYAxisFrom == 1 ~ 1 + ((plotYAxisTo/10) - 0.1),
     plotYAxisFrom == 7 ~ 7 - ((7 - plotYAxisTo) / 10),
     TRUE ~ plotYAxisFrom + ((plotYAxisTo - 4)/10) 
-  )) %>% mutate(yEndTo_flowUpdated = case_when(
-    cropTo == "corn" ~ 
-  )
+  ))
+                
 
+# Need these as indexes for the columns to use for lookup, not the col names
+# because apply sends vectors without names to the function
+cropOrderFromColIndex <- which(colnames(rotationLabel) == "cropOrderFrom")
+cropOrderToColIndex <- which(colnames(rotationLabel) == "cropOrderTo")
+
+lookupLineEnd <- function(inputRow){
+  print(inputRow)
+}
+
+# Initialize holder lists
+yEndFrom_streamlined <- vector("list", nrow(rotationLabel))
+yEndTo_streamlined <- vector("list", nrow(rotationLabel))
+
+# Loop through the rows, using the to/from order to do the lookups from the list
+# and putting the results in the correct list and position
+for(rowNum in seq(1,nrow(rotationLabel),1)){
+  currRow <- rotationLabel[rowNum,]
+  currRowCropOrderFrom <- currRow[cropOrderFromColIndex]
+  currRowCropOrderTo <- currRow[cropOrderToColIndex]
+  # Need the unlist calls because the Order to/from is a list
+  yEndFrom_streamlined[[rowNum]] <- yLineEndLookupList[[unlist(currRowCropOrderFrom)]][unlist(currRowCropOrderTo)]
+  yEndTo_streamlined[[rowNum]] <- yLineEndLookupList[[unlist(currRowCropOrderTo)]][unlist(currRowCropOrderFrom)]
+}
+
+# Add the filled-out holder lists to the dataframe (flattened to numeric vectors)
+rotationLabel$yEndFrom_streamlined <- as.numeric(yEndFrom_streamlined)
+rotationLabel$yEndTo_streamlined <- as.numeric(yEndTo_streamlined)
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
   group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
            plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
            plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo,
-           xEndFrom, xEndTo, yEndFrom_revised, yEndTo_revised) %>% 
-  summarise(totalNumPixels = sum(numPixelsWiZone),
-            totalPercPixelsWiArea = (totalNumPixels / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
+           xEndFrom, xEndTo, yEndFrom_revised, yEndTo_revised, yEndFrom_streamlined,
+           yEndTo_streamlined) %>% 
+  summarise(totalNumPixels_cropTransition = sum(numPixelsWiZone),
+            totalPercPixelsWiArea_cropTransition = (totalNumPixels_cropTransition / unique(currYearTotalPixelNumHolder$totalPixels)) * 100) 
+
+pointSizes_from <- rotationLabel %>% group_by(yearFrom, cropFrom) %>%
+  summarise(totalNumPixels_cropYearFrom = sum(numPixelsWiZone),
+            totalPercPixelsWiArea_cropYearFrom = (totalNumPixels_cropYearFrom / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
+
+pointSizes_to <- rotationLabel %>% group_by(yearTo, cropTo) %>%
+  summarise(totalNumPixels_cropYearTo = sum(numPixelsWiZone),
+            totalPercPixelsWiArea_cropYearTo = (totalNumPixels_cropYearTo / unique(currYearTotalPixelNumHolder$totalPixels)) * 100)
+
+# Join the point sizes to the crop rotation data for plotting
+rotationTabulate_cropRotationYear <- dplyr::left_join(rotationTabulate_cropRotationYear, pointSizes_from)
+rotationTabulate_cropRotationYear <- dplyr::left_join(rotationTabulate_cropRotationYear, pointSizes_to)
 
 # For testing. Open in Excel and use Pivot table with year to/from crop to/from and numPixels
 # to verify that the num pixels for each cover type across all rotation types (i.e. corn) is identical
 # between the 'from' year count and the 'to' year count. They should be, now that I've made the 'other'
 # category, and they are. Also confirmed that the total percent of cover across the 7 types is 
 # 100% for each year.
+
 
 write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Downloads/otterTailTest.csv", row.names = F, sep = ",")
                                                       
@@ -271,12 +311,12 @@ polar_crop
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
 
 test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
-  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
-  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
   #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
-  geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-   geom_segment(aes(x = xEndFrom, y = yEndFrom_revised, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
+  geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear) + 
   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
   # 
-    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom), size = 2, data = rotationTabulate_cropRotationYear) +  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo), size = 2, data = rotationTabulate_cropRotationYear) + theme_bw() + scale_color_identity()
+    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom), data = rotationTabulate_cropRotationYear) +  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo), data = rotationTabulate_cropRotationYear) + theme_bw() + scale_color_identity()
 test
