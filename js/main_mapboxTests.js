@@ -147,7 +147,7 @@ map.on('load', () => {
     // The URLs MUST be from raw.githubusercontent.com/geohouse/MN_cropRotations/main
     // and end with the image file extension, otherwise mapbox gives CORS error if using the version of the 
     // file from the GitHub webpage -> copy image link (that ends with i.e. .jpg?raw=true)
-    const images = [{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Hennepin.png',id:'Hennepin'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Otter%20Tail.svg',id:'Otter Tail'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Crow%20Wing.png',id:'Crow Wing'}];
+    const images = [{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Hennepin.png',id:'Hennepin'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Otter%20Tail2.png',id:'Otter Tail'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Crow%20Wing.png',id:'Crow Wing'}];
     // Code to add all images to the map's style asynchronously, then to place each image as a marker where
     // it should go based on matching id values (I can define what these should be) between the images and a 
     // property in the tileset (which was a property in the geojson file). Doing it this way also allows
