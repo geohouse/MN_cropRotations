@@ -62,8 +62,17 @@ if(length(unique(currYearTotalPixelNumHolder$totalPixels)) != 1){
 # 3 - sugarbeets
 # 2 - dry beans
 # 1 - other
-# To use this lookup for the
-yLineEndLookupList <- list(seq(6.4,5.8, by = -0.1), seq(5.6,5.0,by = -0.1), seq(4.8,4.2,by = -0.1), seq(4.0,3.4, by = -0.1), seq(3.2,2.6, by = -0.1), seq(2.4, 1.8, by = -0.1), seq(1.6,1.1, by = -0.1))
+# To use this lookup for getting the y axis ends of the connector lines, double index
+# with the 'from' crop code first, then the 'to' crop code. E.g.
+# From corn to other is accessed [[7]][1] and gives 1.6
+# From other to corn is accessed [[1]][7] and gives 5.8
+# From corn to corn is accessed [[7]][7] and gives 6.4
+# From sugarbeets to hay is accessed [[3]][5] and gives 3.0
+
+yLineEndLookupList <- list(seq(1.0,1.6, by = 0.1),seq(1.8, 2.4, by = 0.1), 
+                           seq(2.6,3.2, by = 0.1), seq(3.4,4.0, by = 0.1), 
+                           seq(4.2,4.8,by = 0.1), seq(5.0,5.6,by = 0.1), 
+                           seq(5.8,6.4, by = 0.1))
 
 rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   cropCodeFrom == 1 ~ "corn",
