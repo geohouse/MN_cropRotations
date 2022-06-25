@@ -316,16 +316,154 @@ test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotX
   geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
   #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
   geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+  geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
   # 
-    geom_point(aes(x = plotXAxisFrom, y = plotYAxisFrom, color = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 5), data = rotationTabulate_cropRotationYear, show.legend = FALSE) +  
-  geom_point(aes(x = plotXAxisTo, y = plotYAxisTo, color = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 5), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-  theme_bw() + scale_color_identity() + theme(axis.title.x=element_blank(),
+    geom_point(shape = 21, aes(x = plotXAxisFrom, y = plotYAxisFrom, fill = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) +  
+  geom_point(shape = 21, aes(x = plotXAxisTo, y = plotYAxisTo,fill = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) + 
+  theme_bw() + scale_color_identity() + scale_fill_identity() + theme(axis.title.x=element_blank(),
                                               axis.text.x=element_blank(),
                                               axis.text.y = element_blank(),
                                               axis.title.y = element_blank(),
                                               axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
 test
 
-ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/Otter Tail/Otter Tail.svg", plot=test, width=3, height=3)
+#ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/cnty/Otter Tail2.png", plot=test, width=3, height=3)
+
+# Need to use geom_path to make the lines so that they're cleanly joining the diagonal and the horizontal lines
+# This requires re-formatting the data so that each line segment (3 x,y points) is separated 
+# from each other with NA in both an x and y vector of locations. There are 2 such line segments encoded
+# on each line of the data (one from, one to)
+# x, y, width, color
+
+x_holder <- vector(mode = "list", length = nrow(rotationTabulate_cropRotationYear) * 8)
+y_holder <- vector(mode = "list", length = nrow(rotationTabulate_cropRotationYear) * 8)
+width_holder <- vector(mode = "list", length = nrow(rotationTabulate_cropRotationYear) * 8)
+color_holder <- vector(mode = "list", length = nrow(rotationTabulate_cropRotationYear) * 8)
+
+# plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo, xEndFrom, xEndTo, xEndFrom + 0.2, xEndTo - 0.2, yEndFrom_streamlined, yEndTo_streamlined
+
+plotXAxisFrom_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plotXAxisFrom")
+plotXAxisTo_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plotXAxisTo")
+plotYAxisFrom_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plotYAxisFrom")
+plotYAxisTo_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plotYAxisTo")
+
+xEndFrom_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "xEndFrom")
+xEndTo_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "xEndTo")
+
+yEndFrom_streamlined_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "yEndFrom_streamlined")
+yEndTo_streamlined_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "yEndTo_streamlined")
+
+# The width is symmetrical between the from and to, so only 1 width type needed for each of the 2 lines per row
+width_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "totalPercPixelsWiArea_cropTransition")
+
+colorFrom_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plottingColorFrom")
+colorTo_colIndex <- which(colnames(rotationTabulate_cropRotationYear) == "plottingColorTo")
+
+# Loop through rows
+for(rowNum in seq(1,nrow(rotationTabulate_cropRotationYear),1)){
+  currRow <- rotationTabulate_cropRotationYear[rowNum,]
+  
+  plotXAxisFrom <- as.numeric(currRow[plotXAxisFrom_colIndex])
+  plotXAxisTo <- as.numeric(currRow[plotXAxisTo_colIndex])
+  plotYAxisFrom <- as.numeric(currRow[plotYAxisFrom_colIndex])
+  plotYAxisTo <- as.numeric(currRow[plotYAxisTo_colIndex])
+  
+  xEndFrom <- as.numeric(currRow[xEndFrom_colIndex])
+  xEndTo <- as.numeric(currRow[xEndTo_colIndex])
+  
+  # Make the horizontal 'whisker' extension x coordinates
+  xEndFromWhisker <- xEndFrom + 0.2
+  xEndToWhisker <- xEndTo - 0.2
+  
+  yEndFrom_streamlined <- as.numeric(currRow[yEndFrom_streamlined_colIndex])
+  yEndTo_streamlined <- as.numeric(currRow[yEndTo_streamlined_colIndex])
+  
+  width <- as.numeric(currRow[width_colIndex])
+  
+  colorFrom <- as.character(currRow[colorFrom_colIndex])
+  colorTo <- as.character(currRow[colorTo_colIndex])
+  
+  # Use the rowNum to calculate the index for the start of the 8 entries per row (2 * 4entries each) 
+  holderStartPosition <- ((rowNum - 1) * 8) + 1
+  
+  for(offset in seq(0,7,1)){
+    
+    # These are the gaps between line segment codings to split the lines in geom_path
+    if(offset == 3 || offset == 7){
+      width_holder[[holderStartPosition + offset]] <- NA
+      color_holder[[holderStartPosition + offset]] <- NA
+      x_holder[[holderStartPosition + offset]] <- NA
+      y_holder[[holderStartPosition + offset]] <- NA
+    }
+    
+    if(offset != 3 && offset != 7){
+      width_holder[[holderStartPosition + offset]] <- width
+    }
+    
+    #offset 0-3 is the from line; offset 4-7 is the to line
+    if(offset == 0){
+      x_holder[[holderStartPosition + offset]] <- plotXAxisFrom
+      y_holder[[holderStartPosition + offset]] <- plotYAxisFrom
+      color_holder[[holderStartPosition + offset]] <- colorTo
+      
+    }
+    
+    if(offset == 1){
+      x_holder[[holderStartPosition + offset]] <- xEndFrom
+      y_holder[[holderStartPosition + offset]] <- yEndFrom_streamlined
+      color_holder[[holderStartPosition + offset]] <- colorTo
+    }
+    
+    if(offset == 2){
+      x_holder[[holderStartPosition + offset]] <- xEndFromWhisker
+      y_holder[[holderStartPosition + offset]] <- yEndFrom_streamlined
+      color_holder[[holderStartPosition + offset]] <- colorTo
+    }
+    
+    if(offset == 4){
+      x_holder[[holderStartPosition + offset]] <- plotXAxisTo
+      y_holder[[holderStartPosition + offset]] <- plotYAxisTo
+      color_holder[[holderStartPosition + offset]] <- colorFrom
+      
+    }
+    
+    if(offset == 5){
+      x_holder[[holderStartPosition + offset]] <- xEndTo
+      y_holder[[holderStartPosition + offset]] <- yEndTo_streamlined
+      color_holder[[holderStartPosition + offset]] <- colorFrom
+    }
+    
+    if(offset == 6){
+      x_holder[[holderStartPosition + offset]] <- xEndToWhisker
+      y_holder[[holderStartPosition + offset]] <- yEndTo_streamlined
+      color_holder[[holderStartPosition + offset]] <- colorFrom
+    }
+    
+    
+  }
+  
+}
+
+dataForPathPlotting <- data.frame(xCoords = unlist(x_holder), yCoords = unlist(y_holder),
+                                  width = unlist(width_holder), colorToUse = unlist(color_holder))
+
+
+testForPlot <- dataForPathPlotting[9:12,]
+
+# Need to include a dummy grouping (group = 1) to group everything together to get the lines to 
+# break correctly at NAs. Without this, the color aesthetic kept lines that should have been broken
+# into multiple segments together.
+cropRotatePlot <- ggplot(data = dataForPathPlotting, mapping = aes(x = xCoords, y = yCoords, color = colorToUse, group = 1)) + 
+  geom_path(aes(size = width / 2), show.legend = FALSE, linejoin = "round", lineend = "round") + 
+  geom_point(shape = 21, aes(x = plotXAxisFrom, y = plotYAxisFrom, fill = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) +  
+  geom_point(shape = 21, aes(x = plotXAxisTo, y = plotYAxisTo,fill = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) + 
+  theme_bw() + scale_color_identity() + scale_fill_identity() + theme(axis.title.x=element_blank(),
+                                                                      axis.text.x=element_blank(),
+                                                                      axis.text.y = element_blank(),
+                                                                      axis.title.y = element_blank(),
+                                                                      axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
+cropRotatePlot
+
+ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/cnty/Otter Tail2.png", plot=test, width=3, height=3)
+
