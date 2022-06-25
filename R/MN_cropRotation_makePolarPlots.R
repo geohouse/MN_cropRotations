@@ -138,20 +138,20 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   yearTo == 2020 ~ 180,
   yearTo == 2021 ~ 157.5)) %>% mutate(plottingColorFrom = case_when(
     cropFrom == "corn" ~ "#ffd300",
-    cropFrom == "soy" ~ "#267000",
-    cropFrom == "springWheat" ~ "#d8b56b",
-    cropFrom == "sugarbeets" ~ "#a800e2",
-    cropFrom == "dryBeans" ~ "#a50000",
-    cropFrom == "hay" ~ "#ffa5e2",
-    cropFrom == "other" ~ "#888888"
+    cropFrom == "soy" ~ "#4daf4a",
+    cropFrom == "springWheat" ~ "#a65628",
+    cropFrom == "sugarbeets" ~ "#377eb8",
+    cropFrom == "dryBeans" ~ "#e41a1c",
+    cropFrom == "hay" ~ "#f781bf",
+    cropFrom == "other" ~ "#CCCCCC"
   )) %>% mutate(plottingColorTo = case_when(
     cropTo == "corn" ~ "#ffd300",
-    cropTo == "soy" ~ "#267000",
-    cropTo == "springWheat" ~ "#d8b56b",
-    cropTo == "sugarbeets" ~ "#a800e2",
-    cropTo == "dryBeans" ~ "#a50000",
-    cropTo == "hay" ~ "#ffa5e2",
-    cropTo == "other" ~ "#888888"
+    cropTo == "soy" ~ "#4daf4a",
+    cropTo == "springWheat" ~ "#a65628",
+    cropTo == "sugarbeets" ~ "#377eb8",
+    cropTo == "dryBeans" ~ "#e41a1c",
+    cropTo == "hay" ~ "#f781bf",
+    cropTo == "other" ~ "#CCCCCC"
   )) %>% mutate(plotXAxisFrom = case_when(
     yearFrom == 2008 ~ 1,
     yearFrom == 2009 ~ 2,
@@ -311,22 +311,22 @@ polar_crop
 
 #htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
 
-test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
-  geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-  geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-  #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
-  geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-  geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-  # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-  # 
-    geom_point(shape = 21, aes(x = plotXAxisFrom, y = plotYAxisFrom, fill = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) +  
-  geom_point(shape = 21, aes(x = plotXAxisTo, y = plotYAxisTo,fill = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) + 
-  theme_bw() + scale_color_identity() + scale_fill_identity() + theme(axis.title.x=element_blank(),
-                                              axis.text.x=element_blank(),
-                                              axis.text.y = element_blank(),
-                                              axis.title.y = element_blank(),
-                                              axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
-test
+#test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
+#   geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+#   geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+#   #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
+#   geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+#   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
+#   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
+#   # 
+#     geom_point(shape = 21, aes(x = plotXAxisFrom, y = plotYAxisFrom, fill = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) +  
+#   geom_point(shape = 21, aes(x = plotXAxisTo, y = plotYAxisTo,fill = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) + 
+#   theme_bw() + scale_color_identity() + scale_fill_identity() + theme(axis.title.x=element_blank(),
+#                                               axis.text.x=element_blank(),
+#                                               axis.text.y = element_blank(),
+#                                               axis.title.y = element_blank(),
+#                                               axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
+# test
 
 #ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/cnty/Otter Tail2.png", plot=test, width=3, height=3)
 
