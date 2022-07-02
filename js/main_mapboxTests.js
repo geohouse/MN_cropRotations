@@ -346,6 +346,36 @@ map.on('load', () => {
     });
 
 
+    map.on('mousemove', (e) => {
+        const features = map.queryRenderedFeatures(e.point);
+         // Limit the number of properties we're displaying for
+// legibility and performance
+const displayProperties = [
+    'type',
+    'properties',
+    'id',
+    'layer',
+    'source',
+    'sourceLayer'
+    ];
+     
+    const displayFeatures = features.map((feat) => {
+    const displayFeat = {};
+    displayProperties.forEach((prop) => {
+    displayFeat[prop] = feat[prop];
+    });
+    return displayFeat;
+    });
+         
+        // Write object as string with an indent of two spaces.
+        document.getElementById('features').innerHTML = JSON.stringify(
+        displayFeatures,
+        null,
+        2
+        );
+        });
+
+
 });
 
 

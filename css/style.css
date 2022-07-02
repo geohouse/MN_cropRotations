@@ -32,6 +32,16 @@ html, body {
 
 #plotly {
     background-color: blueviolet;
-    width: 30%;
+    /* Takes up 100% of the room in the parent's flex area.*/
+    width: 100%;
 }
 
+#features {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    overflow: auto;
+    background: rgba(255, 255, 255, 0.8);
+    }
