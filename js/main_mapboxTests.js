@@ -175,6 +175,36 @@ map.on('load', () => {
 
     // Add my custom vector tilesets
 
+    map.addSource('stateCentroid', {
+        type: 'vector',
+        url: 'mapbox://geohouse.cl54dzjzq42y723o39gtpfd29-9weht'
+    });
+    map.addLayer({
+        'id': 'stateCenter',
+        'source':'stateCentroid',
+        'source-layer': 'MN_stateCentroid_CRS4326',
+        'minzoom': 0,
+        'maxzoom': stateToCountyZoomThresh,
+        //'type':'symbol',
+        'type': 'circle',
+        'paint':{
+            'circle-radius': 2,
+            'circle-color': '#ff0'
+        }
+        //'layout': {
+            // Tell it which field in the geojson to plot should match with the image id in order for the 
+            // correct image to be placed in the correct location (by name id)
+            //'icon-image': ['get', 'COUN_LC'],
+            // units relative to default size (1). Must be > 0.
+            //'icon-size': 0.2
+        //}
+        //'type': 'circle',
+        //'paint':{
+        //    'circle-radius': 4,
+        //    'circle-color': '#0f0'
+        //}
+    });
+
     map.addSource('stateBoundaries', {
         type: 'vector',
         url: 'mapbox://geohouse.cl34p6beh1nx120s2y59y1ady-6nfmo'
@@ -184,7 +214,7 @@ map.on('load', () => {
         'source':'stateBoundaries',
         'source-layer': 'MN_stateBoundary_CRS4326',
         'minzoom': 0,
-        'maxzoom': maxZoomLevel,
+        'maxzoom': stateToCountyZoomThresh,
         'type': 'line',
         'paint':{
             'line-color': '#fff',
@@ -369,9 +399,15 @@ const displayProperties = [
          
         // Write object as string with an indent of two spaces.
         document.getElementById('features').innerHTML = JSON.stringify(
-        //displayFeatures,
+        displayFeatures,
+        // layer.id = 'countyCenters'
+        // 'trCenters'
+        // 'sectionCenters'
+
         // Use this to get just the name of the icon image. 
-        // features
+        // features is an array of length 1 that holds an object. Need to index [0] first to access the 
+        // object, then can use dot notation to access subsequent layers, except 'icon-image' which 
+        // needs bracket notation access because of the hyphen. Example return of name for Otter Tail county: "Otter Tail"
         features[0].layer.layout["icon-image"].name,
         null,
         2
