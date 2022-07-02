@@ -346,7 +346,7 @@ map.on('load', () => {
     });
 
 
-    map.on('mousemove', (e) => {
+    map.on('click', (e) => {
         const features = map.queryRenderedFeatures(e.point);
          // Limit the number of properties we're displaying for
 // legibility and performance
@@ -369,7 +369,10 @@ const displayProperties = [
          
         // Write object as string with an indent of two spaces.
         document.getElementById('features').innerHTML = JSON.stringify(
-        displayFeatures,
+        //displayFeatures,
+        // Use this to get just the name of the icon image. 
+        // features
+        features[0].layer.layout["icon-image"].name,
         null,
         2
         );
