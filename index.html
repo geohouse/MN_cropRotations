@@ -6,6 +6,7 @@
         <script src="js/leaflet-src.js"></script>
         <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
         <script src='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'></script>
+        <script src="js/plotly-2.12.1.min.js"></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css' rel='stylesheet' />   
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="css/leaflet.css">
@@ -13,7 +14,14 @@
 
     <body>
         <script src="js/jquery-3.6.0.min.js"></script>
-        <div id="map"></div>
+        <div class="container">
+            <div class = "left">
+                <div id="map"></div>
+            </div>
+            <div class="right">
+                <div id="plotly"></div>
+            </div>
+        </div>
         <script src="js/main_mapboxTests.js"></script>
     </body>
  </html>
