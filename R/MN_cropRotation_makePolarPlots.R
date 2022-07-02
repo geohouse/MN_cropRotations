@@ -7,26 +7,26 @@ parentDir <- "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img
 
 parentDirList <- list.dirs(path = parentDir,recursive = FALSE)
 
-for(spatialLevelPath in parentDirList){
-  currSpatialLevelDirs <- list.dirs(path = spatialLevelPath, recursive = TRUE)
-  print("Found spatial level dirs")
-  print(currSpatialLevelDirs)
-  
-  for(spatialDir in currSpatialLevelDirs){
-    currFiles <- list.files(path = spatialDir, full.names = TRUE, recursive = FALSE)
-    #print(currFiles)
-    if(length(currFiles) != 1){
-      warning(paste0("There are multiple files found in dir: ", spatialDir))
-    }
-    for(file in currFiles){
-      if(substring(text = file,first = nchar(file) - 12, last = nchar(file)) == "_allYears.csv"){
-        # process and make the graph here
-        # Dummy call is below
-        print(file)
-      }
-    }
-  }
-}
+# for(spatialLevelPath in parentDirList){
+#   currSpatialLevelDirs <- list.dirs(path = spatialLevelPath, recursive = TRUE)
+#   print("Found spatial level dirs")
+#   print(currSpatialLevelDirs)
+#   
+#   for(spatialDir in currSpatialLevelDirs){
+#     currFiles <- list.files(path = spatialDir, full.names = TRUE, recursive = FALSE)
+#     #print(currFiles)
+#     if(length(currFiles) != 1){
+#       warning(paste0("There are multiple files found in dir: ", spatialDir))
+#     }
+#     for(file in currFiles){
+#       if(substring(text = file,first = nchar(file) - 12, last = nchar(file)) == "_allYears.csv"){
+#         # process and make the graph here
+#         # Dummy call is below
+#         print(file)
+#       }
+#     }
+#   }
+# }
 
 currArea <- "Otter_Tail"
 
@@ -169,7 +169,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropFrom == "sugarbeets" ~ "#377eb8",
     cropFrom == "dryBeans" ~ "#e41a1c",
     cropFrom == "hay" ~ "#f781bf",
-    cropFrom == "other" ~ "#999999"
+    cropFrom == "other" ~ "#BBBBBB"
   )) %>% mutate(plottingColorTo = case_when(
     cropTo == "corn" ~ "#ffd300",
     cropTo == "soy" ~ "#4daf4a",
@@ -177,7 +177,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropTo == "sugarbeets" ~ "#377eb8",
     cropTo == "dryBeans" ~ "#e41a1c",
     cropTo == "hay" ~ "#f781bf",
-    cropTo == "other" ~ "#999999"
+    cropTo == "other" ~ "#BBBBBB"
   )) %>% mutate(plotXAxisFrom = case_when(
     yearFrom == 2008 ~ 1,
     yearFrom == 2009 ~ 2,
