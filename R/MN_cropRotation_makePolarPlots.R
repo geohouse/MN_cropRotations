@@ -7,36 +7,60 @@ parentDir <- "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img
 
 parentDirList <- list.dirs(path = parentDir,recursive = FALSE)
 
-# for(spatialLevelPath in parentDirList){
-#   currSpatialLevelDirs <- list.dirs(path = spatialLevelPath, recursive = TRUE)
-#   print("Found spatial level dirs")
-#   print(currSpatialLevelDirs)
-#   
-#   for(spatialDir in currSpatialLevelDirs){
-#     currFiles <- list.files(path = spatialDir, full.names = TRUE, recursive = FALSE)
-#     #print(currFiles)
-#     if(length(currFiles) != 1){
-#       warning(paste0("There are multiple files found in dir: ", spatialDir))
-#     }
-#     for(file in currFiles){
-#       if(substring(text = file,first = nchar(file) - 12, last = nchar(file)) == "_allYears.csv"){
-#         # process and make the graph here
-#         # Dummy call is below
-#         print(file)
-#       }
-#     }
-#   }
-# }
+for(spatialLevelPath in parentDirList){
+  currSpatialLevelDirs <- list.dirs(path = spatialLevelPath, recursive = TRUE)
+  print("Found spatial level dirs")
+  print(currSpatialLevelDirs)
+
+  # for(spatialDir in currSpatialLevelDirs){
+  #   currFiles <- list.files(path = spatialDir, full.names = TRUE, recursive = FALSE)
+  #   #print(currFiles)
+  #   if(length(currFiles) != 1){
+  #     warning(paste0("There are multiple files found in dir: ", spatialDir))
+  #   }
+  #   for(file in currFiles){
+  #     if(substring(text = file,first = nchar(file) - 12, last = nchar(file)) == "_allYears.csv"){
+  #       # process and make the graph here
+  #       # Dummy call is below
+  #       print(file)
+          # If file is: C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker_allYears.csv
+          # Returns: "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker"
+          # split1 <- strsplit(x = file, split = "_allYears.csv")[[1]]
+          # # Returns: cnty/Becker/Becker
+          # currDataPathCore <- strsplit(x = split1, split = "imgData/")[[1]][2]
+          # # Returns: cnty/Becker
+          # currDataPathForDirCreation <- paste(strsplit(currDataPathCore, split = "/")[[1]][1:2],collapse = "/")
+          # # Create output dir if doesn't already exist
+          # dir.create(path = paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/",currDataPathForDirCreation), recursive = TRUE)
+          # outputFileNamePath <- paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/", currDataPathCore, "_CRPlot.png")
+  #     }
+  #   }
+  # }
+}
 
 currArea <- "Otter_Tail"
 
 currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/", currArea, "/", currArea,"_allYears.csv"), header = T, sep = ",")
-#currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_allYears.csv"), header = T, sep = ",")
 
+# To summarise the state results across counties and to get it ready for plotting like any of the other data sets
+currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_allYears.csv"), header = T, sep = ",")
+# state_holder <- currRotationResults
+# state_holder2 <- state_holder[,2:ncol(state_holder)]
+# names(state_holder2) <- c("cropCode"        ,"numPix", "cropCodeFrom" ,   "cropCodeTo" ,     "yearFrom" ,       "yearTo")
+# state_holder3 <- state_holder2 %>% group_by(cropCode,cropCodeFrom, cropCodeTo,yearFrom, yearTo) %>% summarise(numPixelsWiZone = sum(numPix))
+# state_holder3$X <- rep("state", times = nrow(state_holder3))
+# write.table(x = state_holder3, file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_allYears.csv", sep = ",", quote = FALSE)
+
+# Check to see if more than 1 location name is represented in the file.
+if("X" %in% names(currRotationResults)){
+  if(length(unique(currRotationResults$X)) > 1){
+    stop(paste0("Error. More than 1 location name listed for location: ", currArea, ". Please fix and try again. Exiting."))
+  }
+}
 
 # Get total area of each of the areas (total num pixels) for all of the years
 # This will eventually be used as denom to make percentage of the area.
-currYearTotalPixelNumHolder <- currRotationResults %>% group_by(X, yearFrom) %>% summarise(totalPixels = sum(numPixelsWiZone))
+currYearTotalPixelNumHolder <- currRotationResults %>% group_by(X, yearFrom, yearTo) %>% summarise(totalPixels = sum(numPixelsWiZone))
 
 if(length(unique(currYearTotalPixelNumHolder$totalPixels)) != 1){
   print(paste0("The current area is: ", currArea))
@@ -171,7 +195,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropFrom == "sugarbeets" ~ "#377eb8",
     cropFrom == "dryBeans" ~ "#e41a1c",
     cropFrom == "hay" ~ "#f781bf",
-    cropFrom == "other" ~ "#BBBBBB"
+    cropFrom == "other" ~ "#AAAAAA"
   )) %>% mutate(plottingColorTo = case_when(
     cropTo == "corn" ~ "#ffd300",
     cropTo == "soy" ~ "#4daf4a",
@@ -179,7 +203,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropTo == "sugarbeets" ~ "#377eb8",
     cropTo == "dryBeans" ~ "#e41a1c",
     cropTo == "hay" ~ "#f781bf",
-    cropTo == "other" ~ "#BBBBBB"
+    cropTo == "other" ~ "#AAAAAA"
   )) %>% mutate(plotXAxisFrom = case_when(
     yearFrom == 2008 ~ 1,
     yearFrom == 2009 ~ 2,
@@ -490,8 +514,11 @@ cropRotatePlot <- ggplot(data = dataForPathPlotting, mapping = aes(x = xCoords, 
                                                                       axis.text.x=element_blank(),
                                                                       axis.text.y = element_blank(),
                                                                       axis.title.y = element_blank(),
-                                                                      axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
+                                                                      axis.ticks.y = element_blank(),
+                                                                      panel.grid.minor.x = element_blank(),
+                                                                      panel.grid.minor.y = element_blank()) + 
+scale_x_continuous(n.breaks = 14) + scale_y_continuous(breaks = c(1,1.9,2.8,3.7,4.6,5.5,6.4))
 cropRotatePlot
 
-ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/cnty/Otter Tail2.png", plot=cropRotatePlot, width=5, height=5)
+ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/state/MN_CRPlot.png", plot=cropRotatePlot, width=7, height=5)
 
