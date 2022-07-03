@@ -1,5 +1,3 @@
-import stateCentroidJSON_CR from '../json/state_CR_thumbnails.json' assert {type: "json"};
-console.log(stateCentroidJSON_CR);
 mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg';
 
 const stateToCountyZoomThresh = 9;
@@ -130,9 +128,24 @@ function plotURLIcons (inputGeojson){
     }
 }
 
+let stateCentroidJSON_CR = [];
+async function loadJSONImageMap(JSON_url){
+    let jsonObject = await fetch(JSON_url).then(response => response.json());
+    //console.log(jsonObject);
+    stateCentroidJSON_CR = jsonObject;
+    return jsonObject;
+}
+
+loadJSONImageMap("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_thumbnails.json");
+console.log("test");
+
+//console.log(stateCentroidJSON_CR.json());
+
 
 // Wait until map has finished loading
 map.on('load', () => {
+    console.log(stateCentroidJSON_CR);
+//console.log(stateCentroidJSON_CR);
 
     // map.addSource('countyCentroids_TEST', {
     //     data: geojsonURL,
@@ -150,7 +163,8 @@ map.on('load', () => {
     // and end with the image file extension, otherwise mapbox gives CORS error if using the version of the 
     // file from the GitHub webpage -> copy image link (that ends with i.e. .jpg?raw=true)
     const images = [{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Hennepin.png',id:'Hennepin'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Otter%20Tail3.png',id:'Otter Tail'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Crow%20Wing.png',id:'Crow Wing'}];
-
+    console.log(images);
+    const stateTests = [{"url":"https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/state/MN_CRPlot_resized.png","id":"Y"}]
     // Code to add all images to the map's style asynchronously, then to place each image as a marker where
     // it should go based on matching id values (I can define what these should be) between the images and a 
     // property in the tileset (which was a property in the geojson file). Doing it this way also allows
