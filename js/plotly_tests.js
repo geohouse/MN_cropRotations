@@ -1,4 +1,7 @@
 // Plotly tests
+
+const d3 = Plotly.d3;
+
 const graphHolder = document.getElementById('plotly');
         // Plotly.newPlot(graphHolder, [{
         //     x: [1,2,3,4,5],
@@ -115,7 +118,27 @@ for (let i = 0; i < xLine.length; i++){
 // };
 
 
- Plotly.newPlot(graphHolder,dataHolder, layout);
+function importData(){
+    console.log("test start");
+    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv", function(data) {
+        processData(data);
+        console.log("testing")
+    });
+    // d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv").then((data) => {
+    //     processData(data);
+    //     console.log("testing")
+    // });
+};
+
+function processData(inputData){
+    console.log(inputData);
+}
+
+importData();
+
+
+//Plotly.newPlot(graphHolder,dataHolder, layout);
+
 
 // var xData = [
 //     [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
