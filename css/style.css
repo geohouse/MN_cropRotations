@@ -28,6 +28,8 @@ html, body {
 .right{
     display:flex;
     flex:1;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 #plotly {
@@ -36,6 +38,11 @@ html, body {
     width: 100%;
 }
 
+#description{
+    width: 100%;
+    padding: 10px;
+    margin-bottom:50px;
+}
 #features {
     position: absolute;
     top: 0;

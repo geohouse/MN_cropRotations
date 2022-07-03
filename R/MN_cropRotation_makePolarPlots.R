@@ -30,8 +30,8 @@ parentDirList <- list.dirs(path = parentDir,recursive = FALSE)
 
 currArea <- "Otter_Tail"
 
-#currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/", currArea, "/", currArea,"_allYears.csv"), header = T, sep = ",")
-currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_allYears.csv"), header = T, sep = ",")
+currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/", currArea, "/", currArea,"_allYears.csv"), header = T, sep = ",")
+#currRotationResults <- read.table(paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_allYears.csv"), header = T, sep = ",")
 
 
 # Get total area of each of the areas (total num pixels) for all of the years
