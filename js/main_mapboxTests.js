@@ -1,3 +1,5 @@
+import stateCentroidJSON_CR from '../json/state_CR_thumbnails.json' assert {type: "json"};
+console.log(stateCentroidJSON_CR);
 mapboxgl.accessToken='pk.eyJ1IjoiZ2VvaG91c2UiLCJhIjoiY2wza2RhZXByMGpvNjNibHB6MDNrM3RjbyJ9.HgWFzeB_YwdX9Z_AIFN8vg';
 
 const stateToCountyZoomThresh = 9;
@@ -148,6 +150,7 @@ map.on('load', () => {
     // and end with the image file extension, otherwise mapbox gives CORS error if using the version of the 
     // file from the GitHub webpage -> copy image link (that ends with i.e. .jpg?raw=true)
     const images = [{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Hennepin.png',id:'Hennepin'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Otter%20Tail3.png',id:'Otter Tail'},{url:'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/cnty/Crow%20Wing.png',id:'Crow Wing'}];
+
     // Code to add all images to the map's style asynchronously, then to place each image as a marker where
     // it should go based on matching id values (I can define what these should be) between the images and a 
     // property in the tileset (which was a property in the geojson file). Doing it this way also allows
@@ -162,7 +165,19 @@ map.on('load', () => {
                map.addImage(img.id, image)
                resolve();
            })
-       }))
+       })),
+
+       stateCentroidJSON_CR.map(img => new Promise((resolve, reject) => {
+        map.loadImage(img.url, function (error, image) {
+            if (error) throw error;
+            map.addImage(img.id, image)
+            resolve();
+        })
+    }))
+
+       
+
+
    ).then(console.log("Images Loaded"));
 
     // $.getJSON(geojsonURL, function(jsonData){
@@ -185,19 +200,12 @@ map.on('load', () => {
         'source-layer': 'MN_stateCentroid_CRS4326',
         'minzoom': 0,
         'maxzoom': stateToCountyZoomThresh,
-        //'type':'symbol',
-        'type': 'circle',
-        'paint':{
-            'circle-radius': 2,
-            'circle-color': '#ff0'
-        }
-        //'layout': {
+        'type':'symbol',
+        'layout': {
             // Tell it which field in the geojson to plot should match with the image id in order for the 
-            // correct image to be placed in the correct location (by name id)
-            //'icon-image': ['get', 'COUN_LC'],
-            // units relative to default size (1). Must be > 0.
-            //'icon-size': 0.2
-        //}
+            // correct image to be placed in the correct location (by name id); STATE field == Y
+            'icon-image': ['get', 'STATE'],
+        }
         //'type': 'circle',
         //'paint':{
         //    'circle-radius': 4,
