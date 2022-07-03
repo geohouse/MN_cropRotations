@@ -113,51 +113,51 @@ for (let i = 0; i < xLine.length; i++){
 
  Plotly.newPlot(graphHolder,dataHolder, layout);
 
-var xData = [
-    [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
-    [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
-    [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
-    [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013]
-  ];
+// var xData = [
+//     [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+//     [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+//     [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013],
+//     [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013]
+//   ];
   
-  var yData = [
-    [74, 82, 80, 74, 73, 72, 74, 70, 70, 66, 66, 69],
-    [45, 42, 50, 46, 36, 36, 34, 35, 32, 31, 31, 28],
-    [13, 14, 20, 24, 20, 24, 24, 40, 35, 41, 43, 50],
-    [18, 21, 18, 21, 16, 14, 13, 18, 17, 16, 19, 23]
-  ];
+//   var yData = [
+//     [74, 82, 80, 74, 73, 72, 74, 70, 70, 66, 66, 69],
+//     [45, 42, 50, 46, 36, 36, 34, 35, 32, 31, 31, 28],
+//     [13, 14, 20, 24, 20, 24, 24, 40, 35, 41, 43, 50],
+//     [18, 21, 18, 21, 16, 14, 13, 18, 17, 16, 19, 23]
+//   ];
   
-  var colors = ['rgba(67,67,67,1)', 'rgba(115,115,115,1)', 'rgba(49,130,189, 1)',
-    'rgba(189,189,189,1)'
-  ];
+//   var colors = ['rgba(67,67,67,1)', 'rgba(115,115,115,1)', 'rgba(49,130,189, 1)',
+//     'rgba(189,189,189,1)'
+//   ];
   
-  var lineSize = [2, 2, 4, 2];
+//   var lineSize = [2, 2, 4, 2];
   
-  var labels = ['Television', 'Newspaper', 'Internet', 'Radio'];
+//   var labels = ['Television', 'Newspaper', 'Internet', 'Radio'];
   
-  var data = [];
+//   var data = [];
   
-  for ( var i = 0 ; i < xData.length ; i++ ) {
-    var result = {
-      x: xData[i],
-      y: yData[i],
-      mode: 'lines',
-      line: {
-        color: colors[i],
-        width: lineSize[i]
-      }
-    };
-    var result2 = {
-      x: [xData[i][0], xData[i][xData[i].length - 1]],
-      y: [yData[i][0], yData[i][11]],
-      mode: 'markers',
-      marker: {
-        color: colors[i],
-        size: 12
-      }
-    };
-    data.push(result, result2);
-  }
+//   for ( var i = 0 ; i < xData.length ; i++ ) {
+//     var result = {
+//       x: xData[i],
+//       y: yData[i],
+//       mode: 'lines',
+//       line: {
+//         color: colors[i],
+//         width: lineSize[i]
+//       }
+//     };
+//     var result2 = {
+//       x: [xData[i][0], xData[i][xData[i].length - 1]],
+//       y: [yData[i][0], yData[i][11]],
+//       mode: 'markers',
+//       marker: {
+//         color: colors[i],
+//         size: 12
+//       }
+//     };
+//     data.push(result, result2);
+//   }
   
   
   //Plotly.newPlot(graphHolder,data, layout);

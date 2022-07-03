@@ -5,6 +5,9 @@ const countyToTRZoomThresh = 11;
 const TRtoSectionZoomThresh = 14;
 const maxZoomLevel = 22; // was 22
 
+// Will hold info about the currently displayed interactive graph to be able to show/hide as needed
+let currDisplayImageInfo={};
+
 // Will need to implement clustering and zoom levels to show these data (~12Mb)
 //let geojsonURL = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/geojson/MN_sectionCentroids_CRS4326_v2.geojson";
 // operational, but commented out
@@ -402,14 +405,14 @@ map.on('load', () => {
         const features = map.queryRenderedFeatures(e.point);
          // Limit the number of properties we're displaying for
 // legibility and performance
-const displayProperties = [
-    'type',
-    'properties',
-    'id',
-    'layer',
-    'source',
-    'sourceLayer'
-    ];
+        const displayProperties = [
+            'type',
+            'properties',
+            'id',
+            'layer',
+            'source',
+            'sourceLayer'
+        ];
      
     const displayFeatures = features.map((feat) => {
     const displayFeat = {};
@@ -421,7 +424,7 @@ const displayProperties = [
          
         // Write object as string with an indent of two spaces.
         document.getElementById('features').innerHTML = JSON.stringify(
-        displayFeatures,
+        //displayFeatures,
         // layer.id = 'countyCenters'
         // 'trCenters'
         // 'sectionCenters'
@@ -430,17 +433,39 @@ const displayProperties = [
         // features is an array of length 1 that holds an object. Need to index [0] first to access the 
         // object, then can use dot notation to access subsequent layers, except 'icon-image' which 
         // needs bracket notation access because of the hyphen. Example return of name for Otter Tail county: "Otter Tail"
-        features[0].layer.layout["icon-image"].name,
+        // For the full state layer, the .name appears as "Y"
+        //features[0].layer.layout["icon-image"].name,
+        // Correctly returns the layer ID as defined in the code above.
+        // 'stateCenter',
+        // 'stateBound',
+        // 'countyBound',
+        // 'countyCenters',
+        // 'trBound',
+        // 'trCenters',
+        // 'sectionBound',
+        // 'sectionCenters'
+        features[0].layer.id,
         null,
         2
         );
-        });
+        if(features[0].layer.id === "stateCenter"){
+            console.log("fired");
+            currDisplayImageInfo={layer:features[0].layer.id,imgType:'CR'};
+            const graphTest = document.createElement("img");
+            graphTest.src = 'https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/state/MN_CRPlot_resized.png';
+            document.getElementById('plotly').appendChild(graphTest);
+        }
+        }
+
+        );
+
+
 
         // Plotly tests
-        const graphHolder = document.getElementById('plotly');
-        Plotly.newPlot(graphHolder, [{
-            x: [1,2,3,4,5],
-            y: [1,2,4,8,16]}],{margin:{t:0}});
+        // const graphHolder = document.getElementById('plotly');
+        // Plotly.newPlot(graphHolder, [{
+        //     x: [1,2,3,4,5],
+        //     y: [1,2,4,8,16]}],{margin:{t:0}});
 
 
 });
