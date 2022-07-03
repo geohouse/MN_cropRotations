@@ -14,7 +14,8 @@ let colorMarker = ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000f
 let sizeMarker = [10,20,15,30,13,8,16,12,5];
 let opacityMarker = [100,100,100,100,100,100,100,100,100];
  
-
+const xLookup = {1:2008,2:2009,3:2010,4:2011,5:2012,6:2013,7:2014,8:2015,9:2016,10:2017,11:2018,12:2019,13:2020,14:2021};
+const yLookup = {1:'Other',2:'Dry beans', 3:'Sugar beets', 4:'Spring wheat', 5:'Hay', 6:'Soybeans', 7:'Corn'};
 
 // let markers = {
 //     x: [1,1,1,2,2,2,3,3,3],
@@ -62,7 +63,8 @@ for (let i = 0; i < xLine.length; i++){
         line: {
             color: colorLine[i],
             size: sizeLine[i]
-        }
+        },
+        text: null
     }
 
 
@@ -86,7 +88,9 @@ for (let i = 0; i < xLine.length; i++){
             color: colorMarker[i],
             size: sizeMarker[i],
             opacity: opacityMarker[i]
-        }
+        },
+        //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        text: `${yLookup[yMarker[i]]} covered<br>${sizeMarker[i]}% of area<br>in ${xLookup[xMarker[[i]]]}`
     };
     dataHolder.push(lineOutput, markerOutput);
 };
