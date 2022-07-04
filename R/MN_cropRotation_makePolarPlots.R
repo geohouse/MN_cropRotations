@@ -436,9 +436,11 @@ for(rowNum in seq(1,nrow(rotationTabulate_cropRotationYear),1)){
   colorFrom <- as.character(currRow[colorFrom_colIndex])
   colorTo <- as.character(currRow[colorTo_colIndex])
   
-  # Use the rowNum to calculate the index for the start of the 8 entries per row (2 * 4entries each) 
+  # Use the rowNum to calculate the index for the start of the 8 entries per row (2 * 4entries each)
+  # Splits the rows into chunks associated with each of the crops to render in the plot
   holderStartPosition <- ((rowNum - 1) * 8) + 1
   
+  # Fills the holders with the 
   for(offset in seq(0,7,1)){
     
     # These are the gaps between line segment codings to split the lines in geom_path
