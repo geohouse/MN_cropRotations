@@ -305,7 +305,9 @@ function processData_lines(inputData){
                     connectgaps: false,
                     line: {
                         color: currChunk_color,
-                        width:currChunk_size / 5
+                        // Makes a ramp of line sizes between 1 (for entries on order of 0.001%) and 5 (for entries of 100%)
+                        // slope of 4/5 because 4 size diffs over 5 log10 magnitudes.
+                        width:1+((4/5)*((Math.log10(currChunk_size) + 3)))
                     },
                     text: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br> To: ${currChunk_toCrop} (${currChunk_yearTo}) <br> Covered<br>${currChunk_size}% of area`
                 }
