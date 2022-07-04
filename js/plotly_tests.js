@@ -214,7 +214,7 @@ function processData_markers(inputData){
     }
     //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
     //console.log(markerOutputCombined);
-    Plotly.newPlot(graphHolder,markerOutputCombined, layout);
+    //Plotly.newPlot(graphHolder,markerOutputCombined, layout);
 }
 
 function processData_lines(inputData){
@@ -234,30 +234,114 @@ function processData_lines(inputData){
     // (should be the same for all input data lines of the same chunk)
     let currChunk_color = "";
     let currChunk_size = 0;
+    // These years will be parsed from the xCoords values using the xLookup. year1 is assigned from the 
+    // first row in the chunk, and year2 is assigned to either the next year or the previous year
+    // depending on whether the xCoords value for the second row in the chunk is > or < the first.
+    let currChunk_year1 = 0;
+    let currChunk_year2 = 0;
+    // Once the year1 and year2 are filled, they are re-assigned to year from and year to based on which has the 
+    // later date
+    let currChunk_yearFrom = 0;
+    let currChunk_yearTo = 0;
     //console.log(inputData);
     // The line data is given in 3-row chunks, where every 3 rows represents a new line
     for(let i=1; i<= (inputData.length / 3); i++){
-        for(let chunkOffset=1; chunkOffset < 4; chunkOffset++){
+        for(let chunkOffset=0; chunkOffset < 3; chunkOffset++){
             currRowNum = ((i - 1) * 3) + chunkOffset;
-            console.log(i);
-            console.log(chunkOffset);
-            console.log(currRowNum);
-            currRow = inputData[i];
+            //console.log(i);
+            //console.log(chunkOffset);
+            //console.log(currRowNum);
+            currRow = inputData[currRowNum];
             // If this is the first row in the chunk, then get the color and the size to use
-            if(chunkOffset === 1){
+            if(chunkOffset === 0){
                 currChunk_color = currRow['colorToUse'];
                 currChunk_size = currRow['width'];
+                currChunk_year1 = xLookup[Number.parseInt(currRow['plotXAxisTo'])]
             }
+
+            if(chunkOffset === 1){
+                // This will only be true if the xCoords for the curr row in the chunk are > xCoords in the first
+                // row of the chunk, which means when using floor, they will return the same year from the xLookup.
+                // In this case, currChunk_year2 = currChunk_year1 + 1
+                if(xLookup[Math.floor(Number.parseFloat(currRow['xCoords']))] === currChunk_year1){
+                    currChunk_year2 = currChunk_year1 + 1;
+                } else{
+                    currChunk_year2 = currChunk_year1 - 1;
+                }
+
+                if(currChunk_year1 > currChunk_year2){
+                    currChunk_yearFrom = currChunk_year2;
+                    currChunk_yearTo = currChunk_year1;
+                } else{
+                    currChunk_yearFrom = currChunk_year1;
+                    currChunk_yearTo = currChunk_year2;
+                }
+            }
+
             currChunk_xCoords.push(currRow['xCoords']);
             currChunk_yCoords.push(currRow['yCoords']);
 
-            //If this is the last row in the chunk, then
-
+            if(chunkOffset === 2){
+                currChunkHolder_line = {
+                    x: currChunk_xCoords,
+                    y: currChunk_yCoords,
+                    mode: 'lines',
+                    connectgaps: false,
+                    line: {
+                        color: currChunk_color,
+                        size: currChunk_size
+                    }
+                    //text: ``
+                }
+                lineOutputCombined.push(currChunkHolder_line);
+                if(i < 6){
+                    console.log(currChunkHolder_line);
+                 }
+                currChunkHolder_line = {};
+                currChunk_xCoords = [];
+                currChunk_yCoords = [];
+                currChunk_color = "";
+                currChunk_size = "";
+                currChunk_year1 = 0;
+                currChunk_year2 = 0;
+                currChunk_yearFrom = 0;
+                currChunk_yearTo = 0;
+            }
+            //If this is the last row in the chunk, then build the plotly info for this block and push it to the 
+            // holder.
 
         }
     }
+    
+    let testMarker = {
+        x: [3],
+        y: [4],
+        type: 'scatter',
+        mode: 'markers',
+        marker: {
+            color: '#FFFF00',
+            size: 50
+        }
+    };
+    console.log(testMarker);
         
-        //currRow = inputData[i];
+        //     x: xMarkTo[i],
+        //     y: yMarkFrom[i],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color: colorMarkFrom[i],
+        //         size: sizeMarkFrom[i],
+        //         opacity: 100
+        //     },
+
+    //Plotly.newPlot(graphHolder,[testMarker], layout);
+    Plotly.newPlot(graphHolder,lineOutputCombined, layout);
+}
+      
+    
+    
+    //currRow = inputData[i];
 
         //let lines = {
             //     x: [1,1.2,1.4],
@@ -333,7 +417,6 @@ function processData_lines(inputData){
     //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
     //console.log(markerOutputCombined);
     //Plotly.newPlot(graphHolder,markerOutputCombined, layout);
-}
 
 
 
