@@ -131,23 +131,96 @@ for (let i = 0; i < xLine.length; i++){
 
 function importData(){
     console.log("test start");
-
-    // Import and plot the data for the lines first so they get plotted below the points
-    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly_lines.csv", function (data) {
-        processData_lines(data);
-        console.log("testing lines");
-    });
-
-    // Import and plot the markers second
-    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv", function(data) {
-        processData_markers(data);
+    // Import and plot the markers first
+    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv", function(dataForMarkers) {
+        Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly_lines.csv", function (dataForLines, dataForMarkers) {    
+        processData(dataForMarkers, dataForLines);
         console.log("testing");
-    });
-};
+    })})};
+//     // Then import the line data and update the existing plot to include the lines
+//     Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly_lines.csv", function (data) {
+//         processData_lines(data);
+//         console.log("testing lines");
+//     });
+// };
 
-function processData_lines(inputData){
-    // holds the current data row
+function processData(inputData_markers, inputData_lines){
     let currRow = {};
+    let combinedOutputToPlot = [];
+    let currHolderFrom = {}, currHolderTo = {};
+    //console.log(inputData);
+    //for(let i=0; i< 24; i++){
+    for(let i=0; i< inputData_markers.length; i++){
+        currRow = inputData_markers[i];
+        // xMarkFrom.push([Number.parseInt(currRow['plotXAxisFrom'])]);
+        // xMarkTo.push([Number.parseInt(currRow['plotXAxisTo'])]);
+        // yMarkFrom.push([Number.parseFloat(currRow['plotYAxisFrom'])]);
+        // yMarkTo.push([Number.parseFloat(currRow['plotYAxisTo'])]);
+        // colorMarkFrom.push(currRow['plottingColorFrom']);
+        // colorMarkTo.push(currRow['plottingColorTo']);
+        // sizeMarkFrom.push(currRow['totalPercPixelsWiArea_cropYearFrom']);
+        // sizeMarkTo.push(currRow['totalPercPixelsWiArea_cropYearTo']);
+
+        currHolderFrom = {
+            x: [Number.parseInt(currRow['plotXAxisFrom'])],
+            y: [Number.parseFloat(currRow['plotYAxisFrom'])],
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+                color:currRow['plottingColorFrom'],
+                size: currRow['totalPercPixelsWiArea_cropYearFrom'],
+                opacity: 100
+            },
+            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+            text: `${yLookup[currRow['plotYAxisFrom']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearFrom']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`
+        
+        };
+
+        currHolderTo = {
+            x: [Number.parseInt(currRow['plotXAxisTo'])],
+            y: [Number.parseFloat(currRow['plotYAxisTo'])],
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+                color:currRow['plottingColorTo'],
+                size: currRow['totalPercPixelsWiArea_cropYearTo'],
+                opacity: 100
+            },
+            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+            text: `${yLookup[currRow['plotYAxisTo']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearTo']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`
+        
+        };
+
+
+        //console.log(`i is: ${i}`);
+        //console.log(currRow['plotYAxisFrom']);
+
+        combinedOutputToPlot.push(currHolderFrom);
+        combinedOutputToPlot.push(currHolderTo);
+
+        // let markerOutputTo = {
+        //     x: xMarkTo[i],
+        //     y: yMarkFrom[i],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color: colorMarkFrom[i],
+        //         size: sizeMarkFrom[i],
+        //         opacity: 100
+        //     },
+        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        //     text: `${yLookup[yMarkFrom[i]]} covered<br>${sizeMarkFrom[i]}% of area<br>in ${xLookup[xMarkFrom[[i]]]}`
+        // };
+        // dataHolder.push(lineOutput, markerOutput);
+    }
+    //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
+    //console.log(markerOutputCombined);
+    //Plotly.newPlot(graphHolder,markerOutputCombined, layout);
+
+    // For the lines
+
+    // holds the current data row
+    let currRow_lines = {};
     // Calc the current row value from the combination of the chunk number and the offset within each chunk
     let currRowNum = 0;
     // holds all of the individual line outputs ready for plotting
@@ -182,31 +255,31 @@ function processData_lines(inputData){
 
     //console.log(inputData);
     // The line data is given in 3-row chunks, where every 3 rows represents a new line
-    for(let i=1; i<= (inputData.length / 3); i++){
+    for(let i=1; i<= (inputData_lines.length / 3); i++){
         for(let chunkOffset=0; chunkOffset < 3; chunkOffset++){
             currRowNum = ((i - 1) * 3) + chunkOffset;
             //console.log(i);
             //console.log(chunkOffset);
             //console.log(currRowNum);
-            currRow = inputData[currRowNum];
+            currRow_lines = inputData_lines[currRowNum];
             // If this is the first row in the chunk, then get the color and the size to use
             if(chunkOffset === 0){
-                currChunk_color = currRow['colorToUse'];
-                currChunk_size = currRow['width'];
-                currChunk_year1 = xLookup[Number.parseInt(currRow['xCoords'])]
-                currChunk_coreCrop = yLookup_lines[currRow['yCoords']];
+                currChunk_color = currRow_lines['colorToUse'];
+                currChunk_size = currRow_lines['width'];
+                currChunk_year1 = xLookup[Number.parseInt(currRow_lines['xCoords'])]
+                currChunk_coreCrop = yLookup_lines[currRow_lines['yCoords']];
             }
 
 
-            currChunk_xCoords.push(currRow['xCoords']);
-            currChunk_yCoords.push(currRow['yCoords']);
+            currChunk_xCoords.push(currRow_lines['xCoords']);
+            currChunk_yCoords.push(currRow_lines['yCoords']);
 
             if(chunkOffset === 2){
-                currChunk_satelliteCrop = yLookup_lines[currRow['yCoords']];
+                currChunk_satelliteCrop = yLookup_lines[currRow_lines['yCoords']];
                 // This will only be true if the xCoords for the curr row in the chunk are > xCoords in the first
                 // row of the chunk, which means when using floor, they will return the same year from the xLookup.
                 // In this case, currChunk_year2 = currChunk_year1 + 1
-                if(xLookup[Math.floor(Number.parseFloat(currRow['xCoords']))] === currChunk_year1){
+                if(xLookup[Math.floor(Number.parseFloat(currRow_lines['xCoords']))] === currChunk_year1){
                     currChunk_year2 = currChunk_year1 + 1;
                 } else{
                     currChunk_year2 = currChunk_year1 - 1;
@@ -239,7 +312,7 @@ function processData_lines(inputData){
                     },
                     text: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br> To: ${currChunk_toCrop} (${currChunk_yearTo}) <br> Covered<br>${currChunk_size}% of area`
                 }
-                lineOutputCombined.push(currChunkHolder_line);
+                combinedOutputToPlot.push(currChunkHolder_line);
                 if(i < 6){
                     console.log(currChunkHolder_line);
                  }
@@ -285,85 +358,9 @@ function processData_lines(inputData){
         //         opacity: 100
         //     },
 
-    Plotly.newPlot(graphHolder,lineOutputCombined, layout);
-    //Plotly.addTraces(graphHolder,lineOutputCombined);
+    //Plotly.newPlot(graphHolder,[testMarker], layout);
+    Plotly.newPlot(graphHolder,combinedOutputToPlot, layout);
 }
-
-function processData_markers(inputData){
-    let currRow = {};
-    let markerOutputCombined = [];
-    let currHolderFrom = {}, currHolderTo = {};
-    //console.log(inputData);
-    //for(let i=0; i< 24; i++){
-    for(let i=0; i< inputData.length; i++){
-        currRow = inputData[i];
-        // xMarkFrom.push([Number.parseInt(currRow['plotXAxisFrom'])]);
-        // xMarkTo.push([Number.parseInt(currRow['plotXAxisTo'])]);
-        // yMarkFrom.push([Number.parseFloat(currRow['plotYAxisFrom'])]);
-        // yMarkTo.push([Number.parseFloat(currRow['plotYAxisTo'])]);
-        // colorMarkFrom.push(currRow['plottingColorFrom']);
-        // colorMarkTo.push(currRow['plottingColorTo']);
-        // sizeMarkFrom.push(currRow['totalPercPixelsWiArea_cropYearFrom']);
-        // sizeMarkTo.push(currRow['totalPercPixelsWiArea_cropYearTo']);
-
-        currHolderFrom = {
-            x: [Number.parseInt(currRow['plotXAxisFrom'])],
-            y: [Number.parseFloat(currRow['plotYAxisFrom'])],
-            type: 'scatter',
-            mode: 'markers',
-            marker: {
-                color:currRow['plottingColorFrom'],
-                size: currRow['totalPercPixelsWiArea_cropYearFrom'],
-                opacity: 100
-            },
-            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-            text: `${yLookup[currRow['plotYAxisFrom']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearFrom']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`
-        
-        };
-
-        currHolderTo = {
-            x: [Number.parseInt(currRow['plotXAxisTo'])],
-            y: [Number.parseFloat(currRow['plotYAxisTo'])],
-            type: 'scatter',
-            mode: 'markers',
-            marker: {
-                color:currRow['plottingColorTo'],
-                size: currRow['totalPercPixelsWiArea_cropYearTo'],
-                opacity: 100
-            },
-            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-            text: `${yLookup[currRow['plotYAxisTo']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearTo']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`
-        
-        };
-
-
-        //console.log(`i is: ${i}`);
-        //console.log(currRow['plotYAxisFrom']);
-
-        markerOutputCombined.push(currHolderFrom);
-        markerOutputCombined.push(currHolderTo);
-
-        // let markerOutputTo = {
-        //     x: xMarkTo[i],
-        //     y: yMarkFrom[i],
-        //     type: 'scatter',
-        //     mode: 'markers',
-        //     marker: {
-        //         color: colorMarkFrom[i],
-        //         size: sizeMarkFrom[i],
-        //         opacity: 100
-        //     },
-        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-        //     text: `${yLookup[yMarkFrom[i]]} covered<br>${sizeMarkFrom[i]}% of area<br>in ${xLookup[xMarkFrom[[i]]]}`
-        // };
-        // dataHolder.push(lineOutput, markerOutput);
-    }
-    //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
-    //console.log(markerOutputCombined);
-    Plotly.addTraces(graphHolder,markerOutputCombined);
-}
-
-
       
     
     
