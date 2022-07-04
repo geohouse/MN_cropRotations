@@ -18,9 +18,17 @@ let sizeMarker = [10,20,15,30,13,8,16,12,5];
 let opacityMarker = [100,100,100,100,100,100,100,100,100];
  
 const xLookup = {1:2008,2:2009,3:2010,4:2011,5:2012,6:2013,7:2014,8:2015,9:2016,10:2017,11:2018,12:2019,13:2020,14:2021};
-// y lookup keys have to be strings because the y values are floats.
+// y lookup keys have to be strings because the y values are floats. This is for the marker lookup
 const yLookup = {"1":'Other',"1.9":'Dry beans', "2.8":'Sugar beets', "3.7":'Spring wheat', "4.6":'Hay', "5.5":'Soybeans', "6.4":'Corn'};
-
+// The y lookup for lines is more complicated because there are 49 possibilities (7 crops to/from all 7 crops)
+const yLookup_lines = {"1":'Other',"1.8":'Other',"2.6":'Other',"3.4":'Other',"4.2":'Other',"5.0":'Other',"5.8":'Other',
+                        "1.1":'Dry beans',"1.9":'Dry beans',"2.7":'Dry beans',"3.5":'Dry beans',"4.3":'Dry beans',"5.1":'Dry beans',"5.9":'Dry beans',
+                        "1.2":'Sugar beets',"2.0":'Sugar beets',"2.8":'Sugar beets',"3.6":'Sugar beets',"4.4":'Sugar beets',"5.2":'Sugar beets',"6.0":'Sugar beets',
+                        "1.3":'Spring wheat',"2.1":'Spring wheat',"2.9":'Spring wheat',"3.7":'Spring wheat',"4.5":'Spring wheat',"5.3":'Spring wheat',"6.1":'Spring wheat',
+                        "1.4":'Hay',"2.2":'Hay',"3.0":'Hay',"3.8":'Hay',"4.6":'Hay',"5.4":'Hay',"6.2":'Hay',
+                        "1.5":'Soybeans',"2.3":'Soybeans',"3.1":'Soybeans',"3.9":'Soybeans',"4.7":'Soybeans',"5.5":'Soybeans',"6.3":'Soybeans',
+                        "1.6":'Corn',"2.4":'Corn',"3.2":'Corn',"4.0":'Corn',"4.8":'Corn',"5.6":'Corn',"6.4":'Corn',
+                    }
 // let markers = {
 //     x: [1,1,1,2,2,2,3,3,3],
 //     y: [1,2,3,1,2,3,1,2,3],
@@ -99,6 +107,8 @@ for (let i = 0; i < xLine.length; i++){
     dataHolder.push(lineOutput, markerOutput);
 };
 
+//Plotly.newPlot(graphHolder,dataHolder, layout);
+
 // let lines = {
 //     x: [1,1.2,1.4],
 //         [1,1.2,1.4],
@@ -121,25 +131,23 @@ for (let i = 0; i < xLine.length; i++){
 
 function importData(){
     console.log("test start");
+    // Import and plot the markers first
     Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv", function(data) {
-        processData(data);
-        console.log("testing")
+        processData_markers(data);
+        console.log("testing");
     });
-    // d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv").then((data) => {
-    //     processData(data);
-    //     console.log("testing")
-    // });
+    // Then import the line data and update the existing plot to include the lines
+    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly_lines.csv", function (data) {
+        processData_lines(data);
+        console.log("testing lines");
+    });
 };
 
-function processData(inputData){
+function processData_markers(inputData){
     let currRow = {};
-    let xMarkFrom=[], yMarkFrom = [], xMarkTo = [], yMarkTo = [];
-    let colorMarkFrom = [], colorMarkTo = [];
-    let sizeMarkFrom = [], sizeMarkTo = [];
-    let markerOutputFrom = [], markerOutputTo = [];
     let markerOutputCombined = [];
     let currHolderFrom = {}, currHolderTo = {};
-    console.log(inputData);
+    //console.log(inputData);
     //for(let i=0; i< 24; i++){
     for(let i=0; i< inputData.length; i++){
         currRow = inputData[i];
@@ -205,9 +213,129 @@ function processData(inputData){
         // dataHolder.push(lineOutput, markerOutput);
     }
     //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
-    console.log(markerOutputCombined);
+    //console.log(markerOutputCombined);
     Plotly.newPlot(graphHolder,markerOutputCombined, layout);
 }
+
+function processData_lines(inputData){
+    // holds the current data row
+    let currRow = {};
+    // Calc the current row value from the combination of the chunk number and the offset within each chunk
+    let currRowNum = 0;
+    // holds all of the individual line outputs ready for plotting
+    let lineOutputCombined = [];
+    // holds the info for plotting the current line segment (chunk of 3 lines in the input data)
+    let currChunkHolder_line = {};
+    // keeps the x coords to use for the current chunk (filled iteratively for each of the 3 rows of input data representing
+    // the chunk before it's used to build the plotly call for the current chunk's line segment)
+    let currChunk_xCoords = [];
+    let currChunk_yCoords = [];
+    // The color and line size for the current chunk are single values and are read from the first line of the chunk only
+    // (should be the same for all input data lines of the same chunk)
+    let currChunk_color = "";
+    let currChunk_size = 0;
+    //console.log(inputData);
+    // The line data is given in 3-row chunks, where every 3 rows represents a new line
+    for(let i=1; i<= (inputData.length / 3); i++){
+        for(let chunkOffset=1; chunkOffset < 4; chunkOffset++){
+            currRowNum = ((i - 1) * 3) + chunkOffset;
+            console.log(i);
+            console.log(chunkOffset);
+            console.log(currRowNum);
+            currRow = inputData[i];
+            // If this is the first row in the chunk, then get the color and the size to use
+            if(chunkOffset === 1){
+                currChunk_color = currRow['colorToUse'];
+                currChunk_size = currRow['width'];
+            }
+            currChunk_xCoords.push(currRow['xCoords']);
+            currChunk_yCoords.push(currRow['yCoords']);
+
+            //If this is the last row in the chunk, then
+
+
+        }
+    }
+        
+        //currRow = inputData[i];
+
+        //let lines = {
+            //     x: [1,1.2,1.4],
+            //         [1,1.2,1.4],
+            //         [1,1.2,1.4],
+            //         [2,2.2,2.4],
+            //         [2,2.2,2.4],
+            //         [2,2.2,2.4],
+            //         [3,3.2,3.4],
+            //         [3,3.2,3.4],
+            //         [3,3.2,3.4]
+            //     y: [1,1.4,1.4, null,2,2.4,2.4, null,3,3.4,3.4, null,1,1.4,1.4, null,2,2.4,2.4, null,3,3.4,3.4, null,1,1.4,1.4, null,2,2.4,2.4, null,3,3.4,3.4, null ],
+            //     mode: 'lines',
+            //     connectgaps: false,
+            //     line: {
+            //         color: ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff'],
+            //         size:  [10,20,15,30,13,8,16,12,5]
+            //     }
+            // };
+
+        // currHolderFrom = {
+        //     x: [Number.parseInt(currRow['plotXAxisFrom'])],
+        //     y: [Number.parseFloat(currRow['plotYAxisFrom'])],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color:currRow['plottingColorFrom'],
+        //         size: currRow['totalPercPixelsWiArea_cropYearFrom'],
+        //         opacity: 100
+        //     },
+        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        //     text: `${yLookup[currRow['plotYAxisFrom']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearFrom']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`
+        
+        // };
+
+        // currHolderTo = {
+        //     x: [Number.parseInt(currRow['plotXAxisTo'])],
+        //     y: [Number.parseFloat(currRow['plotYAxisTo'])],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color:currRow['plottingColorTo'],
+        //         size: currRow['totalPercPixelsWiArea_cropYearTo'],
+        //         opacity: 100
+        //     },
+        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        //     text: `${yLookup[currRow['plotYAxisTo']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearTo']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`
+        
+        // };
+
+
+        //console.log(`i is: ${i}`);
+        //console.log(currRow['plotYAxisFrom']);
+
+        // markerOutputCombined.push(currHolderFrom);
+        // markerOutputCombined.push(currHolderTo);
+
+        // let markerOutputTo = {
+        //     x: xMarkTo[i],
+        //     y: yMarkFrom[i],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color: colorMarkFrom[i],
+        //         size: sizeMarkFrom[i],
+        //         opacity: 100
+        //     },
+        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        //     text: `${yLookup[yMarkFrom[i]]} covered<br>${sizeMarkFrom[i]}% of area<br>in ${xLookup[xMarkFrom[[i]]]}`
+        // };
+        // dataHolder.push(lineOutput, markerOutput);
+
+    //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
+    //console.log(markerOutputCombined);
+    //Plotly.newPlot(graphHolder,markerOutputCombined, layout);
+}
+
+
 
 importData();
 
