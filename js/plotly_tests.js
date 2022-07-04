@@ -18,7 +18,8 @@ let sizeMarker = [10,20,15,30,13,8,16,12,5];
 let opacityMarker = [100,100,100,100,100,100,100,100,100];
  
 const xLookup = {1:2008,2:2009,3:2010,4:2011,5:2012,6:2013,7:2014,8:2015,9:2016,10:2017,11:2018,12:2019,13:2020,14:2021};
-const yLookup = {1:'Other',2:'Dry beans', 3:'Sugar beets', 4:'Spring wheat', 5:'Hay', 6:'Soybeans', 7:'Corn'};
+// y lookup keys have to be strings because the y values are floats.
+const yLookup = {"1":'Other',"1.9":'Dry beans', "2.8":'Sugar beets', "3.7":'Spring wheat', "4.6":'Hay', "5.5":'Soybeans', "6.4":'Corn'};
 
 // let markers = {
 //     x: [1,1,1,2,2,2,3,3,3],
@@ -131,7 +132,81 @@ function importData(){
 };
 
 function processData(inputData){
+    let currRow = {};
+    let xMarkFrom=[], yMarkFrom = [], xMarkTo = [], yMarkTo = [];
+    let colorMarkFrom = [], colorMarkTo = [];
+    let sizeMarkFrom = [], sizeMarkTo = [];
+    let markerOutputFrom = [], markerOutputTo = [];
+    let markerOutputCombined = [];
+    let currHolderFrom = {}, currHolderTo = {};
     console.log(inputData);
+    //for(let i=0; i< 24; i++){
+    for(let i=0; i< inputData.length; i++){
+        currRow = inputData[i];
+        // xMarkFrom.push([Number.parseInt(currRow['plotXAxisFrom'])]);
+        // xMarkTo.push([Number.parseInt(currRow['plotXAxisTo'])]);
+        // yMarkFrom.push([Number.parseFloat(currRow['plotYAxisFrom'])]);
+        // yMarkTo.push([Number.parseFloat(currRow['plotYAxisTo'])]);
+        // colorMarkFrom.push(currRow['plottingColorFrom']);
+        // colorMarkTo.push(currRow['plottingColorTo']);
+        // sizeMarkFrom.push(currRow['totalPercPixelsWiArea_cropYearFrom']);
+        // sizeMarkTo.push(currRow['totalPercPixelsWiArea_cropYearTo']);
+
+        currHolderFrom = {
+            x: [Number.parseInt(currRow['plotXAxisFrom'])],
+            y: [Number.parseFloat(currRow['plotYAxisFrom'])],
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+                color:currRow['plottingColorFrom'],
+                size: currRow['totalPercPixelsWiArea_cropYearFrom'],
+                opacity: 100
+            },
+            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+            text: `${yLookup[currRow['plotYAxisFrom']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearFrom']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`
+        
+        };
+
+        currHolderTo = {
+            x: [Number.parseInt(currRow['plotXAxisTo'])],
+            y: [Number.parseFloat(currRow['plotYAxisTo'])],
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+                color:currRow['plottingColorTo'],
+                size: currRow['totalPercPixelsWiArea_cropYearTo'],
+                opacity: 100
+            },
+            //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+            text: `${yLookup[currRow['plotYAxisTo']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearTo']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`
+        
+        };
+
+
+        //console.log(`i is: ${i}`);
+        //console.log(currRow['plotYAxisFrom']);
+
+        markerOutputCombined.push(currHolderFrom);
+        markerOutputCombined.push(currHolderTo);
+
+        // let markerOutputTo = {
+        //     x: xMarkTo[i],
+        //     y: yMarkFrom[i],
+        //     type: 'scatter',
+        //     mode: 'markers',
+        //     marker: {
+        //         color: colorMarkFrom[i],
+        //         size: sizeMarkFrom[i],
+        //         opacity: 100
+        //     },
+        //     //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+        //     text: `${yLookup[yMarkFrom[i]]} covered<br>${sizeMarkFrom[i]}% of area<br>in ${xLookup[xMarkFrom[[i]]]}`
+        // };
+        // dataHolder.push(lineOutput, markerOutput);
+    }
+    //markerOutputCombined.push(markerOutputFrom, markerOutputTo)
+    console.log(markerOutputCombined);
+    Plotly.newPlot(graphHolder,markerOutputCombined, layout);
 }
 
 importData();
