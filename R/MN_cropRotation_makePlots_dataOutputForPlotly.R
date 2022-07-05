@@ -11,7 +11,7 @@ for(spatialLevelPath in parentDirList){
   currSpatialLevelDirs <- list.dirs(path = spatialLevelPath, recursive = TRUE)
   print("Found spatial level dirs")
   print(currSpatialLevelDirs)
-
+  
   # for(spatialDir in currSpatialLevelDirs){
   #   currFiles <- list.files(path = spatialDir, full.names = TRUE, recursive = FALSE)
   #   #print(currFiles)
@@ -23,16 +23,16 @@ for(spatialLevelPath in parentDirList){
   #       # process and make the graph here
   #       # Dummy call is below
   #       print(file)
-          # If file is: C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker_allYears.csv
-          # Returns: "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker"
-          # split1 <- strsplit(x = file, split = "_allYears.csv")[[1]]
-          # # Returns: cnty/Becker/Becker
-          # currDataPathCore <- strsplit(x = split1, split = "imgData/")[[1]][2]
-          # # Returns: cnty/Becker
-          # currDataPathForDirCreation <- paste(strsplit(currDataPathCore, split = "/")[[1]][1:2],collapse = "/")
-          # # Create output dir if doesn't already exist
-          # dir.create(path = paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/",currDataPathForDirCreation), recursive = TRUE)
-          # outputFileNamePath <- paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/", currDataPathCore, "_CRPlot.png")
+  # If file is: C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker_allYears.csv
+  # Returns: "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/cnty/Becker/Becker"
+  # split1 <- strsplit(x = file, split = "_allYears.csv")[[1]]
+  # # Returns: cnty/Becker/Becker
+  # currDataPathCore <- strsplit(x = split1, split = "imgData/")[[1]][2]
+  # # Returns: cnty/Becker
+  # currDataPathForDirCreation <- paste(strsplit(currDataPathCore, split = "/")[[1]][1:2],collapse = "/")
+  # # Create output dir if doesn't already exist
+  # dir.create(path = paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/",currDataPathForDirCreation), recursive = TRUE)
+  # outputFileNamePath <- paste0("C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/", currDataPathCore, "_CRPlot.png")
   #     }
   #   }
   # }
@@ -89,22 +89,6 @@ if(length(unique(currYearTotalPixelNumHolder$totalPixels)) != 1){
 # 2 = hay
 # 1 = other
 
-# Years are the angles (0 degrees is 'east', going CCW); 90 deg is up
-# 2008 = 90
-# 2009 = 67.5
-# 2010 = 45
-# 2011 = 22.5
-# 2012 = 0
-# 2013 = 337.5
-# 2014 = 315
-# 2015 = 292.5
-# 2016 = 270
-# 2017 = 247.5
-# 2018 = 225
-# 2019 = 202.5
-# 2020 = 180
-# 2021 = 157.5
-
 # This is a 2-index lookup to get the y axis end point of a line connecting
 # any two crops in either direction.
 # Crops are coded:
@@ -151,44 +135,7 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
   cropFrom == "dryBeans" ~ 1,
   cropFrom == "hay" ~ 4,
   cropFrom == "other" ~ 7
-)) %>% mutate(plotRadTo = case_when(
-  cropTo == "corn" ~ 6,
-  cropTo == "soy" ~ 5,
-  cropTo == "springWheat" ~ 3,
-  cropTo == "sugarbeets" ~ 2,
-  cropTo == "dryBeans" ~ 1,
-  cropTo == "hay" ~ 4,
-  cropTo == "other" ~ 7
-)) %>% mutate(plotThetaFrom = case_when(
-  yearFrom == 2008 ~ 90,
-  yearFrom == 2009 ~ 67.5,
-  yearFrom == 2010 ~ 45,
-  yearFrom == 2011 ~ 22.5,
-  yearFrom == 2012 ~ 0,
-  yearFrom == 2013 ~ 337.5,
-  yearFrom == 2014 ~ 315,
-  yearFrom == 2015 ~ 292.5,
-  yearFrom == 2016 ~ 270,
-  yearFrom == 2017 ~ 247.5,
-  yearFrom == 2018 ~ 225,
-  yearFrom == 2019 ~ 202.5,
-  yearFrom == 2020 ~ 180,
-  yearFrom == 2021 ~ 157.5
-)) %>% mutate(plotThetaTo = case_when(
-  yearTo == 2008 ~ 90,
-  yearTo == 2009 ~ 67.5,
-  yearTo == 2010 ~ 45,
-  yearTo == 2011 ~ 22.5,
-  yearTo == 2012 ~ 0,
-  yearTo == 2013 ~ 337.5,
-  yearTo == 2014 ~ 315,
-  yearTo == 2015 ~ 292.5,
-  yearTo == 2016 ~ 270,
-  yearTo == 2017 ~ 247.5,
-  yearTo == 2018 ~ 225,
-  yearTo == 2019 ~ 202.5,
-  yearTo == 2020 ~ 180,
-  yearTo == 2021 ~ 157.5)) %>% mutate(plottingColorFrom = case_when(
+)) %>% mutate(plottingColorFrom = case_when(
     cropFrom == "corn" ~ "#ffd300",
     cropFrom == "soy" ~ "#4daf4a",
     cropFrom == "springWheat" ~ "#a65628",
@@ -266,23 +213,10 @@ rotationLabel <- currRotationResults %>% mutate(cropFrom = case_when(
     cropFrom == "dryBeans" ~ 2,
     cropFrom == "hay" ~ 5,
     cropFrom == "other" ~ 1
-  )) %>% mutate(m = (plotYAxisTo - plotYAxisFrom)/(plotXAxisTo - plotXAxisFrom)) %>%
-  mutate(b = -1 * ((m * plotXAxisFrom) - plotYAxisFrom)) %>%
-  mutate(yEndFrom = (m * (plotXAxisFrom + 0.2)) + b) %>%
-  mutate(yEndTo = (m * (plotXAxisTo - 0.2)) + b) %>%
-  mutate(xEndFrom = plotXAxisFrom + 0.2) %>%
-  mutate(xEndTo = plotXAxisTo - 0.2) %>%
-  mutate(yEndTo_revised = case_when(
-    plotYAxisTo == 1 ~ 1 + ((plotYAxisFrom/10) - 0.1),
-    plotYAxisTo == 7 ~ 7 - ((7 - plotYAxisFrom) / 10),
-    TRUE ~ plotYAxisTo + ((plotYAxisFrom - 4)/10) 
   )) %>%
-  mutate(yEndFrom_revised = case_when(
-    plotYAxisFrom == 1 ~ 1 + ((plotYAxisTo/10) - 0.1),
-    plotYAxisFrom == 7 ~ 7 - ((7 - plotYAxisTo) / 10),
-    TRUE ~ plotYAxisFrom + ((plotYAxisTo - 4)/10) 
-  ))
-                
+  mutate(xEndFrom = plotXAxisFrom + 0.2) %>%
+  mutate(xEndTo = plotXAxisTo - 0.2)
+
 
 # Need these as indexes for the columns to use for lookup, not the col names
 # because apply sends vectors without names to the function
@@ -313,10 +247,9 @@ rotationLabel$yEndFrom_streamlined <- as.numeric(yEndFrom_streamlined)
 rotationLabel$yEndTo_streamlined <- as.numeric(yEndTo_streamlined)
 
 rotationTabulate_cropRotationYear <- rotationLabel %>% 
-  group_by(yearFrom, yearTo, cropRotate, plotRadFrom, plotRadTo, plotThetaFrom,
-           plotThetaTo, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
-           plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,m,b,yEndFrom,yEndTo,
-           xEndFrom, xEndTo, yEndFrom_revised, yEndTo_revised, yEndFrom_streamlined,
+  group_by(yearFrom, yearTo, cropRotate, cropFrom, cropTo, plottingColorFrom, plottingColorTo,
+           plotXAxisFrom, plotXAxisTo, plotYAxisFrom, plotYAxisTo,
+           xEndFrom, xEndTo, yEndFrom_streamlined,
            yEndTo_streamlined) %>% 
   summarise(totalNumPixels_cropTransition = sum(numPixelsWiZone),
             totalPercPixelsWiArea_cropTransition = (totalNumPixels_cropTransition / unique(currYearTotalPixelNumHolder$totalPixels)) * 100) 
@@ -339,48 +272,8 @@ rotationTabulate_cropRotationYear <- dplyr::left_join(rotationTabulate_cropRotat
 # category, and they are. Also confirmed that the total percent of cover across the 7 types is 
 # 100% for each year.
 
-
-write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Downloads/otterTailTest.csv", row.names = F, sep = ",")
-                                                      
-
-test <- data.frame(r = c(1,3,2,5,4,2,1), t = c(0,22.5,45,90,180,270,360))
-
-polar <- plot_ly(
-  type = 'scatterpolar',
-  r = test$r,
-  theta = test$t,
-  mode = "lines"
-)
-polar
-
-polar_crop <- plot_ly(
-  type = 'scatterpolar',
-  r = rotationTabulate_cropRotationYear$plotRadTo,
-  theta = rotationTabulate_cropRotationYear$plotThetaTo,
-  mode = "lines"
-)
-polar_crop
-
-#htmlwidgets::saveWidget(partial_bundle(polar_crop), file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/tests/testPlotlyHTML.html", selfcontained =  TRUE)
-
-#test <- ggplot(data = rotationTabulate_cropRotationYear, mapping = aes(x = plotXAxisFrom, y = plotYAxisFrom)) + 
-#   geom_segment(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-#   geom_segment(aes(x = plotXAxisTo, y = plotYAxisTo, xend = xEndTo, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-#   #geom_curve(aes(x = plotXAxisFrom, y = plotYAxisFrom, xend = xEndFrom + 0.2, yend = yEndFrom_revised, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, curvature = -0.5, angle = 160) + 
-#   geom_segment(aes(x = xEndTo, y = yEndTo_streamlined, xend = xEndTo - 0.2, yend = yEndTo_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-#   geom_segment(aes(x = xEndFrom, y = yEndFrom_streamlined, xend = xEndFrom + 0.2, yend = yEndFrom_streamlined, size = totalPercPixelsWiArea / 2, color = plottingColorTo), data = rotationTabulate_cropRotationYear, show.legend = FALSE) + 
-#   # geom_segment(aes(x = xEndTo, y = yEndTo_revised, xend = xEndTo - 0.2, yend = yEndTo_revised, size = totalPercPixelsWiArea / 2, color = plottingColorFrom), data = rotationTabulate_cropRotationYear) + 
-#   # 
-#     geom_point(shape = 21, aes(x = plotXAxisFrom, y = plotYAxisFrom, fill = plottingColorFrom, size = totalPercPixelsWiArea_cropYearFrom / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) +  
-#   geom_point(shape = 21, aes(x = plotXAxisTo, y = plotYAxisTo,fill = plottingColorTo, size = totalPercPixelsWiArea_cropYearTo / 10), data = rotationTabulate_cropRotationYear, show.legend = FALSE, color = "white", stroke = 1) + 
-#   theme_bw() + scale_color_identity() + scale_fill_identity() + theme(axis.title.x=element_blank(),
-#                                               axis.text.x=element_blank(),
-#                                               axis.text.y = element_blank(),
-#                                               axis.title.y = element_blank(),
-#                                               axis.ticks.y = element_blank()) + scale_x_continuous(n.breaks = 14)
-# test
-
-#ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/cnty/Otter Tail2.png", plot=test, width=3, height=3)
+#write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Downloads/otterTailTest.csv", row.names = F, sep = ",")
+write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_forPlotly.csv", sep = ",", row.names = FALSE)
 
 # Need to use geom_path to make the lines so that they're cleanly joining the diagonal and the horizontal lines
 # This requires re-formatting the data so that each line segment (3 x,y points) is separated 
@@ -502,9 +395,6 @@ for(rowNum in seq(1,nrow(rotationTabulate_cropRotationYear),1)){
 dataForPathPlotting <- data.frame(xCoords = unlist(x_holder), yCoords = unlist(y_holder),
                                   width = unlist(width_holder), colorToUse = unlist(color_holder))
 
-
-testForPlot <- dataForPathPlotting[9:12,]
-
 # Need to include a dummy grouping (group = 1) to group everything together to get the lines to 
 # break correctly at NAs. Without this, the color aesthetic kept lines that should have been broken
 # into multiple segments together.
@@ -518,11 +408,14 @@ cropRotatePlot <- ggplot(data = dataForPathPlotting, mapping = aes(x = xCoords, 
                                                                       axis.title.y = element_blank(),
                                                                       axis.ticks.y = element_blank(),
                                                                       panel.grid.minor.x = element_blank(),
-                                                                      panel.grid.minor.y = element_blank()) + 
-scale_x_continuous(n.breaks = 14) + scale_y_continuous(breaks = c(1,1.9,2.8,3.7,4.6,5.5,6.4))
+                                                                      panel.grid.minor.y = element_blank(),
+                                                                      panel.border = element_blank()) + 
+  scale_x_continuous(n.breaks = 14) + scale_y_continuous(breaks = c(1,1.9,2.8,3.7,4.6,5.5,6.4))
 cropRotatePlot
 
-ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/state/MN_CRPlot.png", plot=cropRotatePlot, width=7, height=5)
+# Save with these dimensions, then downscale image using Python to 275 x 220 px using thumbnail(275,275) because the R renderer makes the points huge
+# if try to save directly to that size.
+ggsave(file="C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/img/state/MN_CRPlot_TEST.png", plot=cropRotatePlot, width=1000, height=800, dpi = 300, units = "px")
 
 # write.table(x = rotationTabulate_cropRotationYear, file = "C:/Users/Geoffrey House User/Documents/GitHub/MN_cropRotations/imgData/state/MN_forPlotly.csv", sep = ",", row.names = FALSE)
 
