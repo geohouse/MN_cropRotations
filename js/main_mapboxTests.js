@@ -314,18 +314,21 @@ map.on('load', () => {
 
     map.addSource('townshipRangeCentroids', {
         type: 'vector',
-        url: 'mapbox://geohouse.ashxwcy1'
+        url: 'mapbox://geohouse.2lnt8uoz'
     });
     map.addLayer({
         'id': 'trCenters',
         'source':'townshipRangeCentroids',
-        'source-layer': 'MN_townshipRangeCentroids_CRS-cmfe41',
+        'source-layer': 'MN_townshipRangeCentroids_CRS-3oq9pf',
         'minzoom': countyToTRZoomThresh,
         'maxzoom': TRtoSectionZoomThresh,
-        'type': 'circle',
-        'paint':{
-            'circle-radius': 2,
-            'circle-color': '#ff0'
+        'type':'symbol',
+        'layout': {
+            // Tell it which field in the geojson to plot should match with the image id in order for the 
+            // correct image to be placed in the correct location (by name id)
+            'icon-image': ['get', 'TWP_LABEL'],
+            // units relative to default size (1). Must be > 0.
+            //'icon-size': 0.2
         }
     });
 
@@ -348,18 +351,21 @@ map.on('load', () => {
 
     map.addSource('sectionCentroids', {
         type: 'vector',
-        url: 'mapbox://geohouse.1ve57zd7'
+        url: 'mapbox://geohouse.3ux2j5tq'
     });
     map.addLayer({
         'id': 'sectionCenters',
         'source':'sectionCentroids',
-        'source-layer': 'MN_sectionCentroids_CRS4326-arv0q8',
+        'source-layer': 'MN_sectionCentroids_CRS4326-v-45qel9',
         'minzoom': TRtoSectionZoomThresh,
         'maxzoom': maxZoomLevel,
-        'type': 'circle',
-        'paint':{
-            'circle-radius': 1,
-            'circle-color': '#f0f'
+        'type':'symbol',
+        'layout': {
+            // Tell it which field in the geojson to plot should match with the image id in order for the 
+            // correct image to be placed in the correct location (by name id)
+            'icon-image': ['get', 'TWP_SEC_LABEL'],
+            // units relative to default size (1). Must be > 0.
+            //'icon-size': 0.2
         }
     });
 

@@ -3,7 +3,8 @@ library("ggplot2")
 library("parallel")
 library("MASS")
 
-# Couldn't get parallel processing working on Windows. Running on Mac instead.
+# Couldn't get parallel processing working on Windows. Running on Mac instead. Couldn't get it working there 
+# either. Going to serial processing.
 
 # # parallel processing on Windows computer requires clusters (using 6 cores Windows)
 # cluster <- parallel::makeCluster(4)
@@ -472,7 +473,7 @@ createPlotsAndPlotData <- function(inputPath){
   }
 }
 
-parallel::mclapply(X = pathListToProcess, FUN = createPlotsAndPlotData, mc.cores = 4)
+lapply(X = pathListToProcess, FUN = createPlotsAndPlotData)
 # 
 # # Close the cluster
 # parallel::stopCluster(cluster)
