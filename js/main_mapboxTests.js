@@ -144,7 +144,7 @@ async function loadJSONImageMap(JSON_url){
     return jsonObject;
 }
 
-loadJSONImageMap("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_thumbnails.json");
+loadJSONImageMap("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_images.json");
 console.log("test");
 
 //console.log(stateCentroidJSON_CR.json());

@@ -6,6 +6,7 @@
 # Some of these geojson files include other header info about type and name. Only want dict entry for the 'features' key, and then that's
 # a list of dicts to parse.
 
+# 070622 This is working correctly.
 
 import json
 
@@ -114,19 +115,23 @@ with open(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\json\
 secJSON_holder = []
 secURL_stem = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/img/tr_sec/"
 
-for label_sec in trLabels:
+for label_sec in tr_secLabels:
     #print(label_sec)
     # This label conversion is for the url formation, not the ID part of each entry.
     # Remove any periods in the county names (e.g. St. Louis)
     label_sec_converted = label_sec.replace(".","")
     # Convert any spaces to underscores
-    label_tr_converted = label_tr_converted.replace(" ","_")
-    trURL = trURL_stem + label_tr_converted + "/" + label_tr_converted + "_CRPlot_resized.png"
-    trID = label_tr
-    trJSON_holder.append({'id': trID, 'url': trURL})
+    label_sec_converted = label_sec_converted.replace(" ","_")
+    # Take only the first 2 elements for the town/range info for the given section. This is the parent folder name for each 
+    # specific section folder
+    label_sec_converted_trOnly = "_".join(label_sec_converted.split("_")[0:2])
 
-trJSON_dumped = json.dumps(trJSON_holder)
+    secURL = secURL_stem + label_sec_converted_trOnly + "/" + label_sec_converted + "/" + label_sec_converted + "_CRPlot_resized.png"
+    secID = label_sec
+    secJSON_holder.append({'id': secID, 'url': secURL})
 
-with open(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\json\tr_CR_images.json", 'w') as trJSON_outFile:
-    trJSON_outFile.write(trJSON_dumped)
+secJSON_dumped = json.dumps(secJSON_holder)
+
+with open(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\json\tr_sec_CR_images.json", 'w') as secJSON_outFile:
+    secJSON_outFile.write(secJSON_dumped)
 
