@@ -131,6 +131,11 @@ function plotURLIcons (inputGeojson){
     }
 }
 
+// >>> import json
+// >>> test = [{'a':"tester"},{'b':"tester2"}]
+// >>> json.dumps(test)
+// '[{"a": "tester"}, {"b": "tester2"}]'
+
 let stateCentroidJSON_CR = [];
 async function loadJSONImageMap(JSON_url){
     let jsonObject = await fetch(JSON_url).then(response => response.json());
