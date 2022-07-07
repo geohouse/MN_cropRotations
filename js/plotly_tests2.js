@@ -7,10 +7,9 @@ const graphHolder = document.getElementById('plotly');
         //     x: [1,2,3,4,5],
         //     y: [1,2,4,8,16]}],{margin:{t:0}});
 
-let layout = {};
 
-let xMarker= [[1],[1],[1],[2],[2],[2],[3],[3],[3]];
-let yMarker= [[1],[2],[3],[1],[2],[3],[1],[2],[3]];
+// let xMarker= [[1],[1],[1],[2],[2],[2],[3],[3],[3]];
+// let yMarker= [[1],[2],[3],[1],[2],[3],[1],[2],[3]];
    
   
 let colorMarker = ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff'];
@@ -40,72 +39,72 @@ const yLookup_lines = {"1":'Other',"1.8":'Other',"2.6":'Other',"3.4":'Other',"4.
 //     }
 // };
 
-let xLine = [[1,1.2,1.4],
-[1,1.2,1.4],
-[1,1.2,1.4],
-[2,2.2,2.4],
-[2,2.2,2.4],
-[2,2.2,2.4],
-[3,3.2,3.4],
-[3,3.2,3.4],
-[3,3.2,3.4]];
+// let xLine = [[1,1.2,1.4],
+// [1,1.2,1.4],
+// [1,1.2,1.4],
+// [2,2.2,2.4],
+// [2,2.2,2.4],
+// [2,2.2,2.4],
+// [3,3.2,3.4],
+// [3,3.2,3.4],
+// [3,3.2,3.4]];
 
-let yLine = [[1,1.4,1.4],
-[2,2.4,2.4],
-[3,3.4,3.4],
-[1,1.4,1.4],
-[2,2.4,2.4],
-[3,3.4,3.4],
-[1,1.4,1.4],
-[2,2.4,2.4],
-[3,3.4,3.4]];
+// let yLine = [[1,1.4,1.4],
+// [2,2.4,2.4],
+// [3,3.4,3.4],
+// [1,1.4,1.4],
+// [2,2.4,2.4],
+// [3,3.4,3.4],
+// [1,1.4,1.4],
+// [2,2.4,2.4],
+// [3,3.4,3.4]];
 
-let colorLine = ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff'];
-let sizeLine = [10,20,15,30,13,8,16,12,5];
+// let colorLine = ['#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff','#ff0000', '#00ff00', '#0000ff'];
+// let sizeLine = [10,20,15,30,13,8,16,12,5];
 
-let dataHolder = [];
+// let dataHolder = [];
 
-for (let i = 0; i < xLine.length; i++){
-    console.log(i);
-    let lineOutput = {
-        x: xLine[i],
-        y: yLine[i],
-        type: 'scatter',
-        mode: 'lines',
-        line: {
-            color: colorLine[i],
-            size: sizeLine[i]
-        },
-        text: null
-    }
-
-
-    // var result2 = {
-    //     x: [xData[i][0], xData[i][xData[i].length - 1]],
-    //     y: [yData[i][0], yData[i][11]],
-    //     mode: 'markers',
-    //     marker: {
-    //       color: colors[i],
-    //       size: 12
-    //     }
-    //   };
+// for (let i = 0; i < xLine.length; i++){
+//     console.log(i);
+//     let lineOutput = {
+//         x: xLine[i],
+//         y: yLine[i],
+//         type: 'scatter',
+//         mode: 'lines',
+//         line: {
+//             color: colorLine[i],
+//             size: sizeLine[i]
+//         },
+//         text: null
+//     }
 
 
-    let markerOutput = {
-        x: xMarker[i],
-        y: yMarker[i],
-        type: 'scatter',
-        mode: 'markers',
-        marker: {
-            color: colorMarker[i],
-            size: sizeMarker[i],
-            opacity: opacityMarker[i]
-        },
-        //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-        text: `${yLookup[yMarker[i]]} covered<br>${sizeMarker[i]}% of area<br>in ${xLookup[xMarker[[i]]]}`
-    };
-    dataHolder.push(lineOutput, markerOutput);
-};
+//     // var result2 = {
+//     //     x: [xData[i][0], xData[i][xData[i].length - 1]],
+//     //     y: [yData[i][0], yData[i][11]],
+//     //     mode: 'markers',
+//     //     marker: {
+//     //       color: colors[i],
+//     //       size: 12
+//     //     }
+//     //   };
+
+
+//     let markerOutput = {
+//         x: xMarker[i],
+//         y: yMarker[i],
+//         type: 'scatter',
+//         mode: 'markers',
+//         marker: {
+//             color: colorMarker[i],
+//             size: sizeMarker[i],
+//             opacity: opacityMarker[i]
+//         },
+//         //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
+//         text: `${yLookup[yMarker[i]]} covered<br>${sizeMarker[i]}% of area<br>in ${xLookup[xMarker[[i]]]}`
+//     };
+//     dataHolder.push(lineOutput, markerOutput);
+// };
 
 //Plotly.newPlot(graphHolder,dataHolder, layout);
 
@@ -129,23 +128,36 @@ for (let i = 0; i < xLine.length; i++){
 // };
 
 
-function importData(){
-    console.log("test start");
+function importData(urlStub, fileName){
+    // urlStub is one of:
+    //'state'
+    //'cnty'
+    //'tr_sec'
 
+    console.log("test start");
+    let urlStem = "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/";
+    let urlLines = "";
+    let urlMarkers = "";
+    let stringForTitle = "";
+    if(urlStub === "state"){
+        urlLines = urlStem + urlStub + "/MN_forPlotly_lines.csv";
+        urlMarkers = urlStem + urlStub + "/MN_forPlotly_markers.csv";
+        stringForTitle = "State-level crop rotation results";
+    }
     // Import and plot the data for the lines first so they get plotted below the points
-    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly_lines.csv", function (data) {
-        processData_lines(data);
+    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotlyLines.csv", function (data) {
+        processData_lines(data, stringForTitle);
         console.log("testing lines");
     });
 
     // Import and plot the markers second
-    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotly2.csv", function(data) {
+    Plotly.d3.csv("https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotlyMarkers.csv", function(data) {
         processData_markers(data);
         console.log("testing");
     });
 };
 
-function processData_lines(inputData){
+function processData_lines(inputData, titleString){
     // holds the current data row
     let currRow = {};
     // Calc the current row value from the combination of the chunk number and the offset within each chunk
@@ -180,6 +192,21 @@ function processData_lines(inputData){
     let currChunk_fromCrop = '';
     let currChunk_toCrop = '';
 
+    console.log(`The title string is: ${titleString}`);
+
+    let layout = {'hovermode': 'closest',
+                    'title': titleString,
+                    yaxis: {
+                        'tickmode': "array",
+                        'tickvals': [1,1.9,2.8,3.7,4.6,5.5,6.4],
+                        'ticktext' : ['Other', 'Dry beans', 'Sugar beets', 'Spring wheat', 'Hay', 'Soybeans', 'Corn']
+                    },
+                    xaxis: {
+                        'tickmode': "array",
+                        'tickvals': [1,2,3,4,5,6,7,8,9,10,11,12,13,14],
+                        'ticktext': ['2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021']
+                    }};
+
     //console.log(inputData);
     // The line data is given in 3-row chunks, where every 3 rows represents a new line
     for(let i=1; i<= (inputData.length / 3); i++){
@@ -192,7 +219,11 @@ function processData_lines(inputData){
             // If this is the first row in the chunk, then get the color and the size to use
             if(chunkOffset === 0){
                 currChunk_color = currRow['colorToUse'];
-                currChunk_size = currRow['width'];
+                // Round to 2 decimals
+                currChunk_size = Math.round(currRow['width'] * 100) / 100;
+                console.log(`curr size is: ${currChunk_size}`);
+          
+                
                 currChunk_year1 = xLookup[Number.parseInt(currRow['xCoords'])]
                 currChunk_coreCrop = yLookup_lines[currRow['yCoords']];
             }
@@ -229,16 +260,22 @@ function processData_lines(inputData){
                 currChunkHolder_line = {
                     x: currChunk_xCoords,
                     y: currChunk_yCoords,
+                    type: 'scatter',
                     mode: 'lines',
                     connectgaps: false,
+                    showlegend: false,
                     line: {
                         color: currChunk_color,
                         // Makes a ramp of line sizes between 1 (for entries on order of 0.001%) and 5 (for entries of 100%)
                         // slope of 4/5 because 4 size diffs over 5 log10 magnitudes.
                         width:1+((4/5)*((Math.log10(currChunk_size) + 3)))
                     },
-                    text: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br> To: ${currChunk_toCrop} (${currChunk_yearTo}) <br> Covered<br>${currChunk_size}% of area`
-                }
+                    // Can't get the custom tag formatting without the extra info on the hovers working for the lines like it does for the markers. I have no
+                    // idea why.
+                    text: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br>To: ${currChunk_toCrop} (${currChunk_yearTo}) <br>Covered<br>${currChunk_size}% of area`,
+
+                    //hovertemplate:'%{text}<extra></extra>'
+                };
                 lineOutputCombined.push(currChunkHolder_line);
                 if(i < 6){
                     console.log(currChunkHolder_line);
@@ -247,7 +284,7 @@ function processData_lines(inputData){
                 currChunk_xCoords = [];
                 currChunk_yCoords = [];
                 currChunk_color = "";
-                currChunk_size = "";
+                currChunk_size = 0;
                 currChunk_year1 = 0;
                 currChunk_year2 = 0;
                 currChunk_yearFrom = 0;
@@ -311,14 +348,17 @@ function processData_markers(inputData){
             y: [Number.parseFloat(currRow['plotYAxisFrom'])],
             type: 'scatter',
             mode: 'markers',
+            showlegend: false,
             marker: {
                 color:currRow['plottingColorFrom'],
-                size: currRow['totalPercPixelsWiArea_cropYearFrom'],
+                size: currRow['totalPercPixelsWiArea_cropYearFrom'] / 2,
                 opacity: 100
             },
             //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-            text: `${yLookup[currRow['plotYAxisFrom']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearFrom']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`
-        
+            // Need to wrap the text string in an array, then can refer to it by name (in '%{}') in the hovertemplate call. This allows removal
+            // of the extra coordinates and trace number labels showing up, by using the <extra></extra> tag.
+            text: [`${yLookup[currRow['plotYAxisFrom']]} covered<br>${Math.round(currRow['totalPercPixelsWiArea_cropYearFrom'] * 100)/100}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisFrom'])]}`],
+            hovertemplate:'%{text}<extra></extra>'
         };
 
         currHolderTo = {
@@ -326,14 +366,18 @@ function processData_markers(inputData){
             y: [Number.parseFloat(currRow['plotYAxisTo'])],
             type: 'scatter',
             mode: 'markers',
+            showlegend: false,
             marker: {
                 color:currRow['plottingColorTo'],
-                size: currRow['totalPercPixelsWiArea_cropYearTo'],
+                size: currRow['totalPercPixelsWiArea_cropYearTo'] / 2,
                 opacity: 100
             },
             //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-            text: `${yLookup[currRow['plotYAxisTo']]} covered<br>${currRow['totalPercPixelsWiArea_cropYearTo']}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`
-        
+            // Need to wrap the text string in an array, then can refer to it by name (in '%{}') in the hovertemplate call. This allows removal
+            // of the extra coordinates and trace number labels showing up, by using the <extra></extra> tag.
+            text: [`${yLookup[currRow['plotYAxisTo']]} covered<br>${Math.round(currRow['totalPercPixelsWiArea_cropYearTo'] * 100)/100}% of area<br>in ${xLookup[Number.parseInt(currRow['plotXAxisTo'])]}`],
+            hovertemplate:'%{text}<extra></extra>'
+            
         };
 
 
@@ -446,7 +490,7 @@ function processData_markers(inputData){
 
 
 
-importData();
+importData("state", "dummyFileName");
 
 
 //Plotly.newPlot(graphHolder,dataHolder, layout);
