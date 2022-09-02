@@ -1,54 +1,54 @@
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 #map {
-    position: relative;
-    display:flex;
-    /*top: 0;
+  position: relative;
+  display: flex;
+  /*top: 0;
     bottom: 0;*/
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
-.container{
-    position:relative;
-    padding: 0;
-    margin: 0;
-    display:flex;
-    height: 100%;
+.container {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  height: 100%;
 }
-.left{
-    display:flex;
-    flex:2;
+.left {
+  display: flex;
+  flex: 2;
 }
 
-.right{
-    display:flex;
-    flex:1;
-    flex-direction: column;
-    align-items: flex-start;
+.right {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 #plotly {
-    background-color: blueviolet;
-    /* Takes up 100% of the room in the parent's flex area.*/
-    width: 100%;
+  background-color: blueviolet;
+  /* Takes up 100% of the room in the parent's flex area.*/
+  width: 100%;
 }
 
-#description{
-    width: 100%;
-    padding: 10px;
-    margin-bottom:50px;
+#description {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 50px;
 }
 #features {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    overflow: auto;
-    background: rgba(255, 255, 255, 0.8);
-    }
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.8);
+}
