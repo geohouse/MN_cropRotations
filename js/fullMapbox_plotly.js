@@ -59,32 +59,24 @@ function plotURLIcons(inputGeojson) {
 // >>> json.dumps(test)
 // '[{"a": "tester"}, {"b": "tester2"}]'
 
-let stateCentroidJSON_CR = [];
 let countyCentroidJSON_CR = [];
 let trCentroidJSON_CR = [];
 let tr_secCentroidJSON_CR = [];
 
-async function loadJSONImageMap(JSON_url) {
-  let jsonObject = await fetch(JSON_url).then((response) => response.json());
-  //console.log(jsonObject);
-  stateCentroidJSON_CR = jsonObject;
-  return jsonObject;
-}
+// loadJSONImageMap(
+//   "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_images.json"
+// );
 
-loadJSONImageMap(
-  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_images.json"
-);
+// async function loadJSONImageMap_cnty(JSON_url) {
+//   let jsonObject = await fetch(JSON_url).then((response) => response.json());
+//   //console.log(jsonObject);
+//   countyCentroidJSON_CR = jsonObject;
+//   //return jsonObject;
+// }
 
-async function loadJSONImageMap_cnty(JSON_url) {
-  let jsonObject = await fetch(JSON_url).then((response) => response.json());
-  //console.log(jsonObject);
-  countyCentroidJSON_CR = jsonObject;
-  return jsonObject;
-}
-
-loadJSONImageMap_cnty(
-  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/cnty_CR_images.json"
-);
+// loadJSONImageMap_cnty(
+//   "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/cnty_CR_images.json"
+// );
 
 // async function loadJSONImageMap_tr(JSON_url){
 //     let jsonObject = await fetch(JSON_url).then(response => response.json());
@@ -106,9 +98,50 @@ loadJSONImageMap_cnty(
 
 //console.log(stateCentroidJSON_CR.json());
 
+function addMapImages(url) {
+  console.log(url);
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      data.map((img) => {
+        map.loadImage(img.url, function (error, image) {
+          if (error) throw error;
+          console.log({ img });
+          map.addImage(img.id, image);
+        });
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+//   //    images.map(img => new Promise((resolve, reject) => {
+//   //        map.loadImage(img.url, function (error, image) {
+//   //            if (error) throw error;
+//   //            map.addImage(img.id, image)
+//   //            resolve();
+//   //        })
+//   //    })),
+
+const stateGraphsJsonUrl =
+  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/state_CR_images.json";
+const countyGraphsJsonUrl =
+  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/cnty_CR_images.json";
+const trGraphsJsonUrl =
+  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/tr_CR_images.json";
+const secGraphsJsonUrl =
+  "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/tr_sec_CR_images.json";
+
+addMapImages(stateGraphsJsonUrl);
+//addMapImages(countyGraphsJsonUrl);
+//addMapImages(trGraphsJsonUrl);
+//addMapImages(secGraphsJsonUrl);
+
 // Wait until map has finished loading
 map.on("load", () => {
-  console.log(stateCentroidJSON_CR);
+  //console.log(stateCentroidJSON_CR);
   //console.log(stateCentroidJSON_CR);
 
   // map.loadImage('https://github.com/geohouse/MN_cropRotations/blob/main/img/test.jpg?raw=true', (error, image) => {
@@ -131,59 +164,61 @@ map.on("load", () => {
   // This code is from here:
   // https://github.com/mapbox/mapbox-gl-js/issues/4736
 
-  Promise.all(
-    //    images.map(img => new Promise((resolve, reject) => {
-    //        map.loadImage(img.url, function (error, image) {
-    //            if (error) throw error;
-    //            map.addImage(img.id, image)
-    //            resolve();
-    //        })
-    //    })),
+  // Promise.all(
+  //   //    images.map(img => new Promise((resolve, reject) => {
+  //   //        map.loadImage(img.url, function (error, image) {
+  //   //            if (error) throw error;
+  //   //            map.addImage(img.id, image)
+  //   //            resolve();
+  //   //        })
+  //   //    })),
 
-    stateCentroidJSON_CR.map(
-      (img) =>
-        new Promise((resolve, reject) => {
-          map.loadImage(img.url, function (error, image) {
-            if (error) throw error;
-            map.addImage(img.id, image);
-            resolve();
-          });
-        })
-    ),
+  //   stateCentroidJSON_CR.then((images) => {
+  //     ap(
+  //       (img) =>
+  //         new Promise((resolve, reject) => {
+  //           map.loadImage(img.url, function (error, image) {
+  //             if (error) throw error;
+  //             map.addImage(img.id, image);
+  //             resolve();
+  //           });
+  //         })
+  //     );
+  //   }),
 
-    countyCentroidJSON_CR.map(
-      (img) =>
-        new Promise((resolve, reject) => {
-          map.loadImage(img.url, function (error, image) {
-            if (error) throw error;
-            map.addImage(img.id, image);
-            resolve();
-          });
-        })
-    ),
+  //   countyCentroidJSON_CR.map(
+  //     (img) =>
+  //       new Promise((resolve, reject) => {
+  //         map.loadImage(img.url, function (error, image) {
+  //           if (error) throw error;
+  //           map.addImage(img.id, image);
+  //           resolve();
+  //         });
+  //       })
+  //   ),
 
-    trCentroidJSON_CR.map(
-      (img) =>
-        new Promise((resolve, reject) => {
-          map.loadImage(img.url, function (error, image) {
-            if (error) throw error;
-            map.addImage(img.id, image);
-            resolve();
-          });
-        })
-    )
+  //   trCentroidJSON_CR.map(
+  //     (img) =>
+  //       new Promise((resolve, reject) => {
+  //         map.loadImage(img.url, function (error, image) {
+  //           if (error) throw error;
+  //           map.addImage(img.id, image);
+  //           resolve();
+  //         });
+  //       })
+  //   )
 
-    // tr_secCentroidJSON_CR.map(
-    //   (img) =>
-    //     new Promise((resolve, reject) => {
-    //       map.loadImage(img.url, function (error, image) {
-    //         if (error) throw error;
-    //         map.addImage(img.id, image);
-    //         resolve();
-    //       });
-    //     })
-    // )
-  ).then(console.log("Images Loaded"));
+  //   // tr_secCentroidJSON_CR.map(
+  //   //   (img) =>
+  //   //     new Promise((resolve, reject) => {
+  //   //       map.loadImage(img.url, function (error, image) {
+  //   //         if (error) throw error;
+  //   //         map.addImage(img.id, image);
+  //   //         resolve();
+  //   //       });
+  //   //     })
+  //   // )
+  // ).then(console.log("Images Loaded"));
 
   // $.getJSON(geojsonURL, function(jsonData){
   //    plotURLIcons(jsonData);
