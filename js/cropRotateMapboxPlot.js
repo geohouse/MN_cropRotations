@@ -475,11 +475,12 @@ map.on("load", () => {
       console.log("fired for county");
       // Need to replace any spaces in the county name with underscores because this
       // will be used directly to make path for GH file lookup and those file names
-      // match the county names but with underscores
+      // match the county names but with underscores. Edge case for St. Louis county
+      // that also needs the '.' removed.
       const countyNameForImportData = features[0].properties.COUN_LC.replaceAll(
         " ",
         "_"
-      );
+      ).replaceAll(".", "");
       console.log({ countyNameForImportData });
       makeInteractivePlot(`cnty/${countyNameForImportData}`);
     }

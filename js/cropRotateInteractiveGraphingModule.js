@@ -377,7 +377,7 @@ export default function makeInteractivePlot(geographyName) {
       stringForTitle = "State-level crop rotation results";
     }
     // for county, geographyName will be like 'cnty/Lake_of_the_Woods'
-    // or 'cnty/Lac_Qui_Parle' or 'cnty/Rice'
+    // or 'cnty/Lac_Qui_Parle' or 'cnty/Rice' or 'cnty/St_Louis
     if (geographyName.slice(0, 4) === "cnty") {
       console.log("in county");
       // Get just the county name (for expected file name construction)
