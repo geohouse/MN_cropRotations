@@ -138,7 +138,7 @@ const secGraphsJsonUrl =
 
 addMapImages(stateGraphsJsonUrl);
 addMapImages(countyGraphsJsonUrl);
-//addMapImages(trGraphsJsonUrl);
+addMapImages(trGraphsJsonUrl);
 //addMapImages(secGraphsJsonUrl);
 
 //importData("state", "dummyFileName");
@@ -482,6 +482,18 @@ map.on("load", () => {
       );
       console.log({ countyNameForImportData });
       makeInteractivePlot(`cnty/${countyNameForImportData}`);
+    }
+
+    if (features[0].layer.id === "trCenters") {
+      console.log("fired for TR");
+      // Need to replace the space in the name with underscore, but otherwise
+      // is directly ready for GH file lookup without other modifications.
+      // example input: "T105 R31W" and output for GH: "T105_T31W"
+      const trNameForImportData = features[0].properties.TWP_LABEL.replaceAll(
+        " ",
+        "_"
+      );
+      makeInteractivePlot(`tr_sec/${trNameForImportData}`);
     }
   });
 

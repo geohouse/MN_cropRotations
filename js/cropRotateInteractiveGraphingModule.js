@@ -390,6 +390,24 @@ export default function makeInteractivePlot(geographyName) {
       stringForTitle = `Historical crop rotations in ${countyNameForDisplay} county`;
     }
 
+    // For township/range
+    // geographyName is like "tr_sec/T105_R31W"
+    if (geographyName.slice(0, 6) === "tr_sec") {
+      console.log("in TR");
+      const trNameForURL = geographyName.slice(6, geographyName.length);
+      // Matches 1-3 digits immediately following a 'T' - lookbehind assertion
+      const townshipRe = /(?<=T)\d{1,3}/;
+      const townshipNumAsString = trNameForURL.match(townshipRe);
+      //Matches 1-3 digits immediately following a 'R' and immediately followed by
+      // either 'W' or 'E' (look ahead assertion)
+      const rangeRe = /(?<=R)\d{1,3}(?=W|E)/;
+      const rangeNumAsString = trNameForURL.match(rangeRe);
+
+      urlLines = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyLines.csv`;
+      urlMarkers = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyMarkers.csv`;
+      stringForTitle = `Historical crop rotations for Township ${townshipNumAsString} North, Range ${rangeNumAsString} West`;
+    }
+
     //Import and plot the data for the lines first so they get plotted below the points
     Plotly.d3.csv(urlLines, function (data) {
       processData_lines(data, stringForTitle);
