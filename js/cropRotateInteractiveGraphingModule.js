@@ -367,17 +367,27 @@ export default function makeInteractivePlot(geographyName) {
 
     console.log("test start");
     let urlStem =
-      "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/";
+      "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData";
     let urlLines = "";
     let urlMarkers = "";
     let stringForTitle = "";
     if (geographyName === "state") {
-      urlLines = urlStem + geographyName + "/MN_forPlotlyLines.csv";
-      urlMarkers = urlStem + geographyName + "/MN_forPlotlyMarkers_2.csv";
+      urlLines = `${urlStem}/${geographyName}/MN_forPlotlyLines.csv`;
+      urlMarkers = `${urlStem}/${geographyName}/MN_forPlotlyMarkers_2.csv`;
       stringForTitle = "State-level crop rotation results";
     }
-    if (geographyName === "cnty") {
+    // for county, geographyName will be like 'cnty/Lake_of_the_Woods'
+    // or 'cnty/Lac_Qui_Parle' or 'cnty/Rice'
+    if (geographyName.slice(0, 4) === "cnty") {
       console.log("in county");
+      // Get just the county name (for expected file name construction)
+      // and replace the underscores with spaces (for graph title construction)
+      const countyNameForURL = geographyName.slice(5, geographyName.length);
+      const countyNameForDisplay = countyNameForURL.replaceAll("_", " ");
+
+      urlLines = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyLines.csv`;
+      urlMarkers = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyMarkers.csv`;
+      stringForTitle = `Historical crop rotations in ${countyNameForDisplay} county`;
     }
 
     //Import and plot the data for the lines first so they get plotted below the points
