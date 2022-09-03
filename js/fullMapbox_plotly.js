@@ -270,14 +270,14 @@ function importData(urlStub, fileName) {
     }
   );
 
-  // Import and plot the markers second
-  // Plotly.d3.csv(
-  //   "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotlyMarkers.csv",
-  //   function (data) {
-  //     processData_markers(data);
-  //     console.log("testing markers");
-  //   }
-  // );
+  //Import and plot the markers second
+  Plotly.d3.csv(
+    "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData/state/MN_forPlotlyMarkers_2.csv",
+    function (data) {
+      processData_markers(data);
+      console.log("testing markers");
+    }
+  );
 }
 
 function processData_lines(inputData, titleString) {
@@ -477,7 +477,7 @@ function processData_markers(inputData) {
       showlegend: false,
       marker: {
         color: currRow["plottingColorFrom"],
-        size: currRow["totalPercPixelsWiArea_cropYearFrom"] / 2,
+        size: currRow["totalPercPixelsWiArea_cropYearFrom"] / 6,
         opacity: 100,
       },
       //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
@@ -499,7 +499,7 @@ function processData_markers(inputData) {
       showlegend: false,
       marker: {
         color: currRow["plottingColorTo"],
-        size: currRow["totalPercPixelsWiArea_cropYearTo"] / 2,
+        size: currRow["totalPercPixelsWiArea_cropYearTo"] / 6,
         opacity: 100,
       },
       //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
@@ -518,9 +518,9 @@ function processData_markers(inputData) {
 
     markerOutputCombined.push(currHolderFrom);
     markerOutputCombined.push(currHolderTo);
-
-    Plotly.addTraces(graphHolder, markerOutputCombined);
   }
+  console.log(markerOutputCombined);
+  Plotly.addTraces(graphHolder, markerOutputCombined);
 }
 
 //importData("state", "dummyFileName");
