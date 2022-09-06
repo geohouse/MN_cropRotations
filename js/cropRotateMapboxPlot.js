@@ -137,8 +137,8 @@ const secGraphsJsonUrl =
   "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/json/tr_sec_CR_images.json";
 
 addMapImages(stateGraphsJsonUrl);
-addMapImages(countyGraphsJsonUrl);
-addMapImages(trGraphsJsonUrl);
+//addMapImages(countyGraphsJsonUrl);
+//addMapImages(trGraphsJsonUrl);
 //addMapImages(secGraphsJsonUrl);
 
 //importData("state", "dummyFileName");
