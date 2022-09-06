@@ -285,11 +285,12 @@ export default function makeInteractivePlot(geographyName) {
 
   function processData_markers(inputDataJSON) {
     console.log("in process markers");
+    let allMarkerHolder = [];
     let currHolder = {};
     //console.log(inputData);
     //for(let i=0; i< 24; i++){
     for (let indexKey in inputDataJSON) {
-      currEntry = inputDataJSON[indexKey];
+      let currEntry = inputDataJSON[indexKey];
       // xMarkFrom.push([Number.parseInt(currRow['plotXAxisFrom'])]);
       // xMarkTo.push([Number.parseInt(currRow['plotXAxisTo'])]);
       // yMarkFrom.push([Number.parseFloat(currRow['plotYAxisFrom'])]);
@@ -307,7 +308,7 @@ export default function makeInteractivePlot(geographyName) {
         showlegend: false,
         marker: {
           color: currEntry["color"],
-          size: currRow["percCov"] / 6,
+          size: currEntry["percCov"] / 6,
           opacity: 100,
         },
         //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
@@ -320,9 +321,10 @@ export default function makeInteractivePlot(geographyName) {
         ],
         hovertemplate: "%{text}<extra></extra>",
       };
+      allMarkerHolder.push(currHolder);
     }
     //console.log(markerOutputCombined);
-    Plotly.addTraces(graphHolder, currHolder);
+    Plotly.addTraces(graphHolder, allMarkerHolder);
   }
 
   function renderPlot() {
