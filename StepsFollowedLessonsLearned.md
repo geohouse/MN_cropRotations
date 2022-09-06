@@ -43,3 +43,7 @@ Python libraries -
 - geopandas
 - pandas
 - rasterstats
+
+Built Python function to convert .csv input for graphing to .json instead, and streamlined the input data to be ~1/14 the number of data points, with no lost necessary info (did this by removing double logging of to/from for each year (only needed for lines), and removing to/from crop info (also only needed for lines)). Reduces file size needed for marker plotting from 50kb to 15kb.
+
+Transitioned the plotly marker plotting to use these streamlined JSON data, which also makes easier data import directly with promises and doesn't need a D3 library (also paves the way to remove the web url loading of plotly with odd version requirement and include as a bundled library instead)
