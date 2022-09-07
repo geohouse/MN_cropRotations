@@ -253,7 +253,7 @@ export default function makeInteractivePlot(geographyName) {
             },
             // Can't get the custom tag formatting without the extra info on the hovers working for the lines like it does for the markers. I have no
             // idea why.
-            hovertemplate: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br>To: ${currChunk_toCrop} (${currChunk_yearTo}) <br>Covered<br>${currChunk_size}% of area`,
+            hovertemplate: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br>To: ${currChunk_toCrop} (${currChunk_yearTo}) <br>Covered<br>${currChunk_size}% of area<extra></extra>`,
 
             //hovertemplate:'%{text}<extra></extra>'
           };
@@ -318,7 +318,9 @@ export default function makeInteractivePlot(geographyName) {
         hovertemplate: [
           `${yLookup[currEntry["y"]]} covered<br>${
             Math.round(currEntry["percCov"] * 100) / 100
-          }% of area<br>in ${xLookup[Number.parseInt(currEntry["x"])]}`,
+          }% of area<br>in ${
+            xLookup[Number.parseInt(currEntry["x"])]
+          }<extra></extra>`,
         ],
         //hovertemplate: "%{text}<extra></extra>",
       };

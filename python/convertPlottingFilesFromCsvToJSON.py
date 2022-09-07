@@ -124,7 +124,7 @@ def convertCsvToJSON_lines(inputCSV, outputJSONPath):
         jsonOutFile.write(json.dumps(dataHolder, indent=4))
 
 
-convertCsvToJSON_lines(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyLines.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyLines.json")
+#convertCsvToJSON_lines(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyLines.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyLines.json")
 
 # RE to detect if the current root dir is for a section (and skip if it is)
 
