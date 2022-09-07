@@ -327,6 +327,7 @@ export default function makeInteractivePlot(geographyName) {
       allMarkerHolder.push(currHolder);
     }
     //console.log(markerOutputCombined);
+    //console.log({ allMarkerHolder });
     Plotly.addTraces(graphHolder, allMarkerHolder);
   }
 

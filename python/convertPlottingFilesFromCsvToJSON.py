@@ -27,28 +27,30 @@ def reformatRowDictForOutput_markers(inputRowDict, toFromSelector):
     reformattedRowDict["percCov"] = inputRowDict[f'totalPercPixelsWiArea_cropYear{toFromSelector}']    
     return reformattedRowDict
 
-# The above re-format reduces number of fields per entry. Also need 
-# to reduce the number of entries, because there are 7 entries for each
-# point for each of the crop rotation combinations, but they're all identical.
-# Make a dict with year strings as keys and arrays as the values. Arrays
-# will keep track of the colors encountered for each year, and output the row
-# if it contains a new color for that year, otherwise skips
-colorBasedEntryScreenerDict = {'2008':[],
-'2009':[],
-'2010':[],
-'2011':[],
-'2012':[],
-'2013':[],
-'2014': [],
-'2015': [],
-'2016': [],
-'2017': [],
-'2018': [],
-'2019': [],
-'2020': [],
-'2021': []}
 
 def convertCsvToJSON_markers(inputCSV, outputJSONPath):
+    
+    # The above re-format reduces number of fields per entry. Also need 
+    # to reduce the number of entries, because there are 7 entries for each
+    # point for each of the crop rotation combinations, but they're all identical.
+    # Make a dict with year strings as keys and arrays as the values. Arrays
+    # will keep track of the colors encountered for each year, and output the row
+    # if it contains a new color for that year, otherwise skips
+    colorBasedEntryScreenerDict = {'2008':[],
+    '2009':[],
+    '2010':[],
+    '2011':[],
+    '2012':[],
+    '2013':[],
+    '2014': [],
+    '2015': [],
+    '2016': [],
+    '2017': [],
+    '2018': [],
+    '2019': [],
+    '2020': [],
+    '2021': []}
+    
     #print(inputCSV)
     dataHolder = {}
     with open(inputCSV, 'r', encoding="utf-8-sig") as inputCSVFile:
@@ -90,7 +92,7 @@ def convertCsvToJSON_markers(inputCSV, outputJSONPath):
         jsonOutFile.write(json.dumps(dataHolder, indent=4))
             
 
-#convertCsvToJSON_markers(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.json")
+#convertCsvToJSON_markers(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers.json")
 
 #Unfortunately the JSON conversion for the lines data makes the data
 # ~4x larger (from 137kb to ~500kb). So only converting the data for state, counties, and township/ranges (not sections)
@@ -140,22 +142,22 @@ for root, dirs, files in os.walk(r"C:\Users\Geoffrey House User\Documents\GitHub
     else:
         for file in files:
             # Functional, but commented out to prevent re-run
-            # if file.endswith("_forPlotlyMarkers.csv"):
-            #     fileStem = file.split("_forPlotlyMarkers.csv")[0]
-            #     fullFilePath_markers = os.path.join(root, file)
-            #     jsonFileOutputName = fileStem + "_forPlotlyMarkers.json"
-            #     jsonFullFilePath_markers = os.path.join(root, jsonFileOutputName)
-            #     print(file)
-            #     print(fullFilePath)
-            #     print(jsonFullFilePath)
-            #     convertCsvToJSON_markers(fullFilePath_markers, jsonFullFilePath_markers)
-            if file.endswith("_forPlotlyLines.csv"):
-                fileStem = file.split("_forPlotlyLines.csv")[0]
-                fullFilePath_lines = os.path.join(root, file)
-                jsonFileOutputName = fileStem + "_forPlotlyLines.json"
-                jsonFullFilePath_lines = os.path.join(root, jsonFileOutputName)
+            if file.endswith("_forPlotlyMarkers.csv"):
+                fileStem = file.split("_forPlotlyMarkers.csv")[0]
+                fullFilePath_markers = os.path.join(root, file)
+                jsonFileOutputName = fileStem + "_forPlotlyMarkers.json"
+                jsonFullFilePath_markers = os.path.join(root, jsonFileOutputName)
                 print(file)
-                print(fullFilePath_lines)
-                print(jsonFullFilePath_lines)
-                convertCsvToJSON_lines(fullFilePath_lines, jsonFullFilePath_lines)
+                print(fullFilePath_markers)
+                print(jsonFullFilePath_markers)
+                convertCsvToJSON_markers(fullFilePath_markers, jsonFullFilePath_markers)
+            # if file.endswith("_forPlotlyLines.csv"):
+            #     fileStem = file.split("_forPlotlyLines.csv")[0]
+            #     fullFilePath_lines = os.path.join(root, file)
+            #     jsonFileOutputName = fileStem + "_forPlotlyLines.json"
+            #     jsonFullFilePath_lines = os.path.join(root, jsonFileOutputName)
+            #     print(file)
+            #     print(fullFilePath_lines)
+            #     print(jsonFullFilePath_lines)
+            #     convertCsvToJSON_lines(fullFilePath_lines, jsonFullFilePath_lines)
 
