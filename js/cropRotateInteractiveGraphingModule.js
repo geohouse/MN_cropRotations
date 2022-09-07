@@ -392,12 +392,6 @@ export default function makeInteractivePlot(geographyName) {
         processData_markers(data);
       })
       .catch((error) => console.error(error));
-
-    //Import and plot the markers second
-    // Plotly.d3.csv(urlMarkers, function (data) {
-    //   processData_markers(data);
-    //   console.log("testing markers");
-    // });
   }
 
   renderPlot();

@@ -1,6 +1,6 @@
 import json
 import csv
-
+import os
 
 # This is a test script to convert a csv file to JSON for plotly
 # impot/plotting with the crop rotations. This is to make the data import
@@ -62,8 +62,8 @@ def convertCsvToJSON(inputCSV, outputJSONPath):
         lineNumber = 1
         for line in csvReader:
             #print(line.strip())
-            print(lineNumber)
-            print(line)
+            #print(lineNumber)
+            #print(line)
             # pull the information from the 'from' entr
             currYearFrom = line["yearFrom"]
             currColorFrom = line["plottingColorFrom"]
@@ -83,10 +83,26 @@ def convertCsvToJSON(inputCSV, outputJSONPath):
                     colorBasedEntryScreenerDict[currYearTo].append(currColorTo)
                     dataHolder[str(lineNumber)] = reformatRowDictForOutput(line, 'To')
                     lineNumber+=1
-    print(dataHolder)
+    #print(dataHolder)
 
     with open(outputJSONPath, 'w', encoding='utf-8') as jsonOutFile:
         jsonOutFile.write(json.dumps(dataHolder, indent=4))
             
 
-convertCsvToJSON(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.json")
+#convertCsvToJSON(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.csv", r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData\state\MN_forPlotlyMarkers_2.json")
+
+for root, dirs, files in os.walk(r"C:\Users\Geoffrey House User\Documents\GitHub\MN_cropRotations\imgData"):
+    print(root)
+    print(dirs)
+    print(files)
+   
+    for file in files:
+        if file.endswith("_forPlotlyMarkers.csv"):
+            fileStem = file.split("_forPlotlyMarkers.csv")[0]
+            fullFilePath = os.path.join(root, file)
+            jsonFileOutputName = fileStem + "_forPlotlyMarkers.json"
+            jsonFullFilePath = os.path.join(root, jsonFileOutputName)
+            print(file)
+            print(fullFilePath)
+            print(jsonFullFilePath)
+            convertCsvToJSON(fullFilePath, jsonFullFilePath)
