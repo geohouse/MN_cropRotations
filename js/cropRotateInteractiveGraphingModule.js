@@ -327,7 +327,7 @@ export default function makeInteractivePlot(geographyName) {
       allMarkerHolder.push(currHolder);
     }
     //console.log(markerOutputCombined);
-    //console.log({ allMarkerHolder });
+    console.log({ allMarkerHolder });
     Plotly.addTraces(graphHolder, allMarkerHolder);
   }
 
@@ -401,7 +401,7 @@ export default function makeInteractivePlot(geographyName) {
       .then((data) => {
         console.log("rendering lines");
         console.log(data);
-        processData_lines(data);
+        processData_lines(data, stringForTitle);
       })
       .catch((error) => console.error(error));
 

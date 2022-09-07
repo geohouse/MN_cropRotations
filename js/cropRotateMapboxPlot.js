@@ -138,7 +138,7 @@ const secGraphsJsonUrl =
 
 addMapImages(stateGraphsJsonUrl);
 addMapImages(countyGraphsJsonUrl);
-//addMapImages(trGraphsJsonUrl);
+addMapImages(trGraphsJsonUrl);
 //addMapImages(secGraphsJsonUrl);
 
 //importData("state", "dummyFileName");
