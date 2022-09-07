@@ -1,7 +1,7 @@
 export default function makeInteractivePlot(geographyName) {
   // Plotly section
 
-  const d3 = Plotly.d3;
+  //const d3 = Plotly.d3;
 
   const graphHolder = document.querySelector("#plotly");
 
@@ -338,7 +338,7 @@ export default function makeInteractivePlot(geographyName) {
     //'tr_sec'
 
     let urlStem =
-      "https://raw.githubusercontent.com/geohouse/MN_cropRotations/JSON-plotting-data/imgData";
+      "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData";
     let urlLines = "";
     let urlMarkers = "";
     let stringForTitle = "";
