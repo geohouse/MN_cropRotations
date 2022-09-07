@@ -1,7 +1,7 @@
 export default function makeInteractivePlot(geographyName) {
   // Plotly section
 
-  const d3 = Plotly.d3;
+  //const d3 = Plotly.d3;
 
   const graphHolder = document.querySelector("#plotly");
 
@@ -189,35 +189,36 @@ export default function makeInteractivePlot(geographyName) {
     };
 
     //console.log(inputData);
-    // The line data is given in 3-row chunks, where every 3 rows represents a new line
-    for (let i = 1; i <= inputData.length / 3; i++) {
-      for (let chunkOffset = 0; chunkOffset < 3; chunkOffset++) {
-        currRowNum = (i - 1) * 3 + chunkOffset;
+    // The line data is given in 3-entry chunks, where every 3 entries represents a new line
+    for (let i = 1; i <= Object.keys(inputData).length / 3; i++) {
+      for (let chunkOffset = 1; chunkOffset <= 3; chunkOffset++) {
+        // starts from 1
+        let currIndexNum = (i - 1) * 3 + chunkOffset;
         //console.log(i);
         //console.log(chunkOffset);
         //console.log(currRowNum);
-        currRow = inputData[currRowNum];
+        let currEntry = inputData[currIndexNum];
         // If this is the first row in the chunk, then get the color and the size to use
-        if (chunkOffset === 0) {
-          currChunk_color = currRow["colorToUse"];
+        if (chunkOffset === 1) {
+          currChunk_color = currEntry["color"];
           // Round to 2 decimals
-          currChunk_size = Math.round(currRow["width"] * 100) / 100;
+          currChunk_size = Math.round(currEntry["perCov"] * 100) / 100;
           //console.log(`curr size is: ${currChunk_size}`);
 
-          currChunk_year1 = xLookup[Number.parseInt(currRow["xCoords"])];
-          currChunk_coreCrop = yLookup_lines[currRow["yCoords"]];
+          currChunk_year1 = xLookup[Number.parseInt(currEntry["x"])];
+          currChunk_coreCrop = yLookup_lines[currEntry["y"]];
         }
 
-        currChunk_xCoords.push(currRow["xCoords"]);
-        currChunk_yCoords.push(currRow["yCoords"]);
+        currChunk_xCoords.push(currEntry["x"]);
+        currChunk_yCoords.push(currEntry["y"]);
 
-        if (chunkOffset === 2) {
-          currChunk_satelliteCrop = yLookup_lines[currRow["yCoords"]];
+        if (chunkOffset === 3) {
+          currChunk_satelliteCrop = yLookup_lines[currEntry["y"]];
           // This will only be true if the xCoords for the curr row in the chunk are > xCoords in the first
           // row of the chunk, which means when using floor, they will return the same year from the xLookup.
           // In this case, currChunk_year2 = currChunk_year1 + 1
           if (
-            xLookup[Math.floor(Number.parseFloat(currRow["xCoords"]))] ===
+            xLookup[Math.floor(Number.parseFloat(currEntry["x"]))] ===
             currChunk_year1
           ) {
             currChunk_year2 = currChunk_year1 + 1;
@@ -252,7 +253,7 @@ export default function makeInteractivePlot(geographyName) {
             },
             // Can't get the custom tag formatting without the extra info on the hovers working for the lines like it does for the markers. I have no
             // idea why.
-            text: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br>To: ${currChunk_toCrop} (${currChunk_yearTo}) <br>Covered<br>${currChunk_size}% of area`,
+            hovertemplate: `From: ${currChunk_fromCrop} (${currChunk_yearFrom}) <br>To: ${currChunk_toCrop} (${currChunk_yearTo}) <br>Covered<br>${currChunk_size}% of area<extra></extra>`,
 
             //hovertemplate:'%{text}<extra></extra>'
           };
@@ -283,16 +284,14 @@ export default function makeInteractivePlot(geographyName) {
     //Plotly.addTraces(graphHolder,lineOutputCombined);
   }
 
-  function processData_markers(inputData) {
+  function processData_markers(inputDataJSON) {
     console.log("in process markers");
-    let currRow = {};
-    let markerOutputCombined = [];
-    let currHolderFrom = {},
-      currHolderTo = {};
+    let allMarkerHolder = [];
+    let currHolder = {};
     //console.log(inputData);
     //for(let i=0; i< 24; i++){
-    for (let i = 0; i < inputData.length; i++) {
-      currRow = inputData[i];
+    for (let indexKey in inputDataJSON) {
+      let currEntry = inputDataJSON[indexKey];
       // xMarkFrom.push([Number.parseInt(currRow['plotXAxisFrom'])]);
       // xMarkTo.push([Number.parseInt(currRow['plotXAxisTo'])]);
       // yMarkFrom.push([Number.parseFloat(currRow['plotYAxisFrom'])]);
@@ -302,61 +301,34 @@ export default function makeInteractivePlot(geographyName) {
       // sizeMarkFrom.push(currRow['totalPercPixelsWiArea_cropYearFrom']);
       // sizeMarkTo.push(currRow['totalPercPixelsWiArea_cropYearTo']);
 
-      currHolderFrom = {
-        x: [Number.parseInt(currRow["plotXAxisFrom"])],
-        y: [Number.parseFloat(currRow["plotYAxisFrom"])],
+      currHolder = {
+        x: [Number.parseInt(currEntry["x"])],
+        y: [Number.parseFloat(currEntry["y"])],
         type: "scatter",
         mode: "markers",
         showlegend: false,
         marker: {
-          color: currRow["plottingColorFrom"],
-          size: currRow["totalPercPixelsWiArea_cropYearFrom"] / 6,
+          color: currEntry["color"],
+          size: currEntry["percCov"] / 6,
           opacity: 100,
         },
         //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
         // Need to wrap the text string in an array, then can refer to it by name (in '%{}') in the hovertemplate call. This allows removal
         // of the extra coordinates and trace number labels showing up, by using the <extra></extra> tag.
-        text: [
-          `${yLookup[currRow["plotYAxisFrom"]]} covered<br>${
-            Math.round(currRow["totalPercPixelsWiArea_cropYearFrom"] * 100) /
-            100
+        hovertemplate: [
+          `${yLookup[currEntry["y"]]} covered<br>${
+            Math.round(currEntry["percCov"] * 100) / 100
           }% of area<br>in ${
-            xLookup[Number.parseInt(currRow["plotXAxisFrom"])]
-          }`,
+            xLookup[Number.parseInt(currEntry["x"])]
+          }<extra></extra>`,
         ],
-        hovertemplate: "%{text}<extra></extra>",
+        //hovertemplate: "%{text}<extra></extra>",
       };
-
-      currHolderTo = {
-        x: [Number.parseInt(currRow["plotXAxisTo"])],
-        y: [Number.parseFloat(currRow["plotYAxisTo"])],
-        type: "scatter",
-        mode: "markers",
-        showlegend: false,
-        marker: {
-          color: currRow["plottingColorTo"],
-          size: currRow["totalPercPixelsWiArea_cropYearTo"] / 6,
-          opacity: 100,
-        },
-        //text: `Area covered by ${sizeMarker[i]}%<br>${yLookup[yMarker[i]]}<br>in ${xLookup[xMarker[[i]]]}`
-        // Need to wrap the text string in an array, then can refer to it by name (in '%{}') in the hovertemplate call. This allows removal
-        // of the extra coordinates and trace number labels showing up, by using the <extra></extra> tag.
-        text: [
-          `${yLookup[currRow["plotYAxisTo"]]} covered<br>${
-            Math.round(currRow["totalPercPixelsWiArea_cropYearTo"] * 100) / 100
-          }% of area<br>in ${xLookup[Number.parseInt(currRow["plotXAxisTo"])]}`,
-        ],
-        hovertemplate: "%{text}<extra></extra>",
-      };
-
-      //console.log(`i is: ${i}`);
-      //console.log(currRow['plotYAxisFrom']);
-
-      markerOutputCombined.push(currHolderFrom);
-      markerOutputCombined.push(currHolderTo);
+      allMarkerHolder.push(currHolder);
     }
     //console.log(markerOutputCombined);
-    Plotly.addTraces(graphHolder, markerOutputCombined);
+    console.log({ allMarkerHolder });
+    Plotly.addTraces(graphHolder, allMarkerHolder);
   }
 
   function renderPlot() {
@@ -365,15 +337,14 @@ export default function makeInteractivePlot(geographyName) {
     //'cnty'
     //'tr_sec'
 
-    console.log("test start");
     let urlStem =
       "https://raw.githubusercontent.com/geohouse/MN_cropRotations/main/imgData";
     let urlLines = "";
     let urlMarkers = "";
     let stringForTitle = "";
     if (geographyName === "state") {
-      urlLines = `${urlStem}/${geographyName}/MN_forPlotlyLines.csv`;
-      urlMarkers = `${urlStem}/${geographyName}/MN_forPlotlyMarkers_2.csv`;
+      urlLines = `${urlStem}/${geographyName}/MN_forPlotlyLines.json`;
+      urlMarkers = `${urlStem}/${geographyName}/MN_forPlotlyMarkers.json`;
       stringForTitle = "State-level crop rotation results";
     }
     // for county, geographyName will be like 'cnty/Lake_of_the_Woods'
@@ -385,8 +356,8 @@ export default function makeInteractivePlot(geographyName) {
       const countyNameForURL = geographyName.slice(5, geographyName.length);
       const countyNameForDisplay = countyNameForURL.replaceAll("_", " ");
 
-      urlLines = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyLines.csv`;
-      urlMarkers = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyMarkers.csv`;
+      urlLines = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyLines.json`;
+      urlMarkers = `${urlStem}/${geographyName}/${countyNameForURL}_forPlotlyMarkers.json`;
       stringForTitle = `Historical crop rotations in ${countyNameForDisplay} county`;
     }
 
@@ -403,22 +374,53 @@ export default function makeInteractivePlot(geographyName) {
       const rangeRe = /(?<=R)\d{1,3}(?=W|E)/;
       const rangeNumAsString = trNameForURL.match(rangeRe);
 
-      urlLines = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyLines.csv`;
-      urlMarkers = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyMarkers.csv`;
+      urlLines = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyLines.json`;
+      urlMarkers = `${urlStem}/${geographyName}/${trNameForURL}_forPlotlyMarkers.json`;
       stringForTitle = `Historical crop rotations for Township ${townshipNumAsString} North, Range ${rangeNumAsString} West`;
     }
 
     //Import and plot the data for the lines first so they get plotted below the points
-    Plotly.d3.csv(urlLines, function (data) {
-      processData_lines(data, stringForTitle);
-      console.log("testing lines");
-    });
+    // Plotly.d3.csv(urlLines, function (data) {
+    //   processData_lines(data, stringForTitle);
+    //   console.log("testing lines");
+    // });
 
-    //Import and plot the markers second
-    Plotly.d3.csv(urlMarkers, function (data) {
-      processData_markers(data);
-      console.log("testing markers");
-    });
+    // Tests for JSON data input to plotting
+    console.log("json tests");
+
+    fetch(urlLines)
+      .then((response) => {
+        if (!response.ok) {
+          let error = new Error(`HTTP status code error: ${response.status}`);
+          error.response = response;
+          error.status = response.status;
+          throw error;
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("rendering lines");
+        console.log(data);
+        processData_lines(data, stringForTitle);
+      })
+      .catch((error) => console.error(error));
+
+    fetch(urlMarkers)
+      .then((response) => {
+        if (!response.ok) {
+          let error = new Error(`HTTP status code error: ${response.status}`);
+          error.response = response;
+          error.status = response.status;
+          throw error;
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("rendering markers");
+        console.log(data);
+        processData_markers(data);
+      })
+      .catch((error) => console.error(error));
   }
 
   renderPlot();
