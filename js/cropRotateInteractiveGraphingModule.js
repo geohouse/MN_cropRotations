@@ -1,10 +1,9 @@
 export default function makeInteractivePlot(geographyName) {
   // Plotly section
 
-  //const d3 = Plotly.d3;
-
   const graphHolder = document.querySelector("#plotly");
-
+  // Clear any existing graph before re-drawing
+  Plotly.purge("plotly");
   // Plotly.newPlot(graphHolder, [{
   //     x: [1,2,3,4,5],
   //     y: [1,2,4,8,16]}],{margin:{t:0}});
@@ -329,6 +328,9 @@ export default function makeInteractivePlot(geographyName) {
     //console.log(markerOutputCombined);
     console.log({ allMarkerHolder });
     Plotly.addTraces(graphHolder, allMarkerHolder);
+    let interactiveGraphMessage = document.querySelector("#description");
+    console.log(interactiveGraphMessage.innerHTML);
+    interactiveGraphMessage.style.display = "none";
   }
 
   function renderPlot() {

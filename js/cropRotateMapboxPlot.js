@@ -138,13 +138,18 @@ const secGraphsJsonUrl =
 
 addMapImages(stateGraphsJsonUrl);
 addMapImages(countyGraphsJsonUrl);
-addMapImages(trGraphsJsonUrl);
+//addMapImages(trGraphsJsonUrl);
 //addMapImages(secGraphsJsonUrl);
 
 //importData("state", "dummyFileName");
 
 // Wait until map has finished loading
 map.on("load", () => {
+  // Turn off the 'map is loading...' banner
+  let mapIsLoading = document.querySelector("#on-map-load");
+  //console.log(mapIsLoading.innerHTML);
+  mapIsLoading.style.display = "none";
+
   //console.log(stateCentroidJSON_CR);
   //console.log(stateCentroidJSON_CR);
 
@@ -413,6 +418,10 @@ map.on("load", () => {
   });
 
   map.on("click", (e) => {
+    let interactiveGraphMessage = document.querySelector("#description");
+    // Turn on the display for the graph loading message (will get turned off upon graph draw completion in the graphing module)
+    interactiveGraphMessage.innerHTML = "Interactive chart is being drawn...";
+    interactiveGraphMessage.style.display = "";
     const features = map.queryRenderedFeatures(e.point);
     // Limit the number of properties we're displaying for
     // legibility and performance
