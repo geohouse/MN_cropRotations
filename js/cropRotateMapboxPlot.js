@@ -273,7 +273,7 @@ map.on("load", () => {
     maxzoom: stateToCountyZoomThresh,
     type: "line",
     paint: {
-      "line-color": "#fff",
+      "line-color": "#beaed4",
       "line-width": 2,
     },
   });
@@ -290,8 +290,8 @@ map.on("load", () => {
     maxzoom: countyToTRZoomThresh,
     type: "line",
     paint: {
-      "line-color": "#f00",
-      "line-width": 4,
+      "line-color": "#fdc086",
+      "line-width": 2,
     },
   });
 
@@ -332,7 +332,7 @@ map.on("load", () => {
     maxzoom: TRtoSectionZoomThresh,
     type: "line",
     paint: {
-      "line-color": "#00f",
+      "line-color": "#ffff99",
       "line-width": 2,
     },
   });

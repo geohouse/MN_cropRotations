@@ -281,6 +281,9 @@ export default function makeInteractivePlot(geographyName) {
 
     Plotly.newPlot(graphHolder, lineOutputCombined, layout);
     //Plotly.addTraces(graphHolder,lineOutputCombined);
+    let interactiveGraphMessage = document.querySelector("#description");
+    console.log(interactiveGraphMessage.innerHTML);
+    interactiveGraphMessage.style.display = "none";
   }
 
   function processData_markers(inputDataJSON) {
@@ -328,9 +331,9 @@ export default function makeInteractivePlot(geographyName) {
     //console.log(markerOutputCombined);
     console.log({ allMarkerHolder });
     Plotly.addTraces(graphHolder, allMarkerHolder);
-    let interactiveGraphMessage = document.querySelector("#description");
-    console.log(interactiveGraphMessage.innerHTML);
-    interactiveGraphMessage.style.display = "none";
+    // let interactiveGraphMessage = document.querySelector("#description");
+    // console.log(interactiveGraphMessage.innerHTML);
+    // interactiveGraphMessage.style.display = "none";
   }
 
   function renderPlot() {
