@@ -20,6 +20,7 @@ body {
   margin: 0;
   display: flex;
   height: 100%;
+  width: 100%;
 }
 .left {
   display: flex;
@@ -39,10 +40,19 @@ body {
 }
 
 #description {
-  width: 100%;
-  padding: 40vh 3vw;
+  width: 75%;
+  padding: 3vh;
+  margin: 25vh 3vw 30vh 3vw;
   text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5em;
+  border: double 3px steelblue;
 }
+
+#description a {
+  font-size: 0.85em;
+}
+
 #features {
   position: absolute;
   top: 0;
@@ -66,4 +76,10 @@ body {
   In other trials, the map shrinks far more than it should, and not clear why.*/
   width: 50%;
   text-align: center;
+}
+
+#click-start {
+  color: #ff3377;
+  font-weight: bold;
+  padding: 2vh;
 }
