@@ -23,20 +23,19 @@ body {
 }
 .left {
   display: flex;
-  flex: 2;
+  flex: 1;
+  height: 100%;
 }
 
 .right {
-  display: flex;
   flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
+  height: 100%;
 }
 
 #plotly {
-  background-color: blueviolet;
   /* Takes up 100% of the room in the parent's flex area.*/
   width: 100%;
+  height: 100%;
 }
 
 #description {
@@ -63,8 +62,8 @@ body {
   top: 0px;
   left: 0px;
   padding: 10px;
-  /* The left container with the map is set to take up 2/3 of the flex area, so set the width of the message to also be 2/3. Hacky, but works.
+  /* The left container with the map is set to take up 1/2 of the flex area, so set the width of the message to also be 1/2. Hacky, but works.
   In other trials, the map shrinks far more than it should, and not clear why.*/
-  width: 67%;
+  width: 50%;
   text-align: center;
 }
